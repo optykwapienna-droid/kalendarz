@@ -1,32 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Question, Service } from "@/config";
-
-const TZ = "Europe/Warsaw";
-const PAGE_DAYS = 14;
-
-const fmtTime = new Intl.DateTimeFormat("pl-PL", { timeZone: TZ, hour: "2-digit", minute: "2-digit" });
-const fmtLong = new Intl.DateTimeFormat("pl-PL", { timeZone: TZ, weekday: "long", day: "numeric", month: "long" });
-
-function today(): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
-}
-
-function addDays(day: string, n: number): string {
-  const [y, m, d] = day.split("-").map(Number);
-  return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
-}
-
-function dayLabel(day: string) {
-  const date = new Date(day + "T12:00:00Z");
-  return {
-    weekday: new Intl.DateTimeFormat("pl-PL", { weekday: "short", timeZone: "UTC" }).format(date),
-    day: date.getUTCDate(),
-    month: new Intl.DateTimeFormat("pl-PL", { month: "short", timeZone: "UTC" }).format(date),
-  };
-}
+import SlotPicker, { fmtLong, fmtTime } from "./SlotPicker";
 
 type Answers = Record<string, string | string[]>;
 
@@ -41,35 +18,12 @@ export default function BookingForm({
 }) {
   const router = useRouter();
   const [serviceId, setServiceId] = useState(services[0].id);
-  const [from, setFrom] = useState(today);
-  const [slots, setSlots] = useState<Record<string, string[]> | null>(null);
-  const [day, setDay] = useState<string | null>(null);
   const [start, setStart] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Answers>({});
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [reload, setReload] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-    setSlots(null);
-    fetch(`/api/slots?service=${serviceId}&from=${from}&days=${PAGE_DAYS}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((j) => {
-        if (cancelled) return;
-        setSlots(j.slots);
-        const first = Object.keys(j.slots).find((d) => j.slots[d].length > 0) ?? null;
-        setDay((cur) => (cur && j.slots[cur]?.length ? cur : first));
-      })
-      .catch(() => !cancelled && setError("Nie udało się pobrać terminów. Odśwież stronę."));
-    return () => {
-      cancelled = true;
-    };
-  }, [serviceId, from, reload]);
-
-  const days = useMemo(() => (slots ? Object.keys(slots) : []), [slots]);
   const service = services.find((s) => s.id === serviceId)!;
-  const hasAny = days.some((d) => slots![d].length > 0);
 
   function setAnswer(id: string, value: string | string[]) {
     setAnswers((a) => ({ ...a, [id]: value }));
@@ -141,59 +95,7 @@ export default function BookingForm({
         <p className="muted small" style={{ marginTop: -6 }}>
           {service.name} · {service.durationMin} min
         </p>
-        {!slots && <p className="muted">Ładowanie terminów…</p>}
-        {slots && (
-          <>
-            <div className="days" role="listbox" aria-label="Dzień wizyty">
-              {days.map((d) => {
-                const l = dayLabel(d);
-                const free = slots[d].length > 0;
-                return (
-                  <button
-                    type="button"
-                    key={d}
-                    className={`day${d === day ? " active" : ""}`}
-                    disabled={!free}
-                    aria-selected={d === day}
-                    onClick={() => {
-                      setDay(d);
-                      setStart(null);
-                    }}
-                  >
-                    <small>{l.weekday}</small>
-                    <b>{l.day}</b>
-                    <small>{l.month}</small>
-                  </button>
-                );
-              })}
-            </div>
-            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-              {from > today() && (
-                <button type="button" className="btn secondary small" onClick={() => setFrom(addDays(from, -PAGE_DAYS))}>
-                  ← Wcześniej
-                </button>
-              )}
-              <button type="button" className="btn secondary small" onClick={() => setFrom(addDays(from, PAGE_DAYS))}>
-                Późniejsze terminy →
-              </button>
-            </div>
-            {!hasAny && <p className="muted">Brak wolnych terminów w tych dniach. Sprawdź późniejsze terminy.</p>}
-            {day && slots[day]?.length > 0 && (
-              <div className="slots">
-                {slots[day].map((s) => (
-                  <button
-                    type="button"
-                    key={s}
-                    className={`slot${s === start ? " active" : ""}`}
-                    onClick={() => setStart(s)}
-                  >
-                    {fmtTime.format(new Date(s))}
-                  </button>
-                ))}
-              </div>
-            )}
-          </>
-        )}
+        <SlotPicker serviceId={serviceId} value={start} onChange={setStart} reload={reload} />
       </section>
 
       {start && (

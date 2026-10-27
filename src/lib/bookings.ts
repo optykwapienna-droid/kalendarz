@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { booking, business, questions, services } from "@/config";
 import { db, type BlockRow, type BookingRow, type SmsLogRow } from "./db";
-import { createEvent, deleteEvent, googleBusy, listAppEvents } from "./google";
+import { createEvent, deleteEvent, googleBusy, listAppEvents, moveEvent } from "./google";
 import { slotsForDay, type Busy } from "./slots";
 import { planSync } from "./syncPlan";
 import { addDays, localDay, localToUtc } from "./time";
@@ -62,6 +62,13 @@ export async function availability(serviceId: string, fromDay: string, days: num
   return result;
 }
 
+/** Czy pacjent może wybrać ten termin: w godzinach otwarcia i niezajęty. */
+async function isSlotFree(start: Date, durationMin: number, now: Date): Promise<boolean> {
+  const day = localDay(start, tz);
+  const busy = await busyBetween(localToUtc(day, 0, tz), localToUtc(addDays(day, 1), 0, tz));
+  return slotsForDay(day, { now, durationMin, busy }).some((s) => s.getTime() === start.getTime());
+}
+
 export type CreateResult = { ok: true; booking: BookingRow } | { ok: false; error: string; status: number };
 
 const TAKEN = "Ten termin jest już zajęty. Wybierz inny.";
@@ -75,11 +82,8 @@ export async function createBooking(input: Validated, opts: { fromPanel?: boolea
   const service = services.find((s) => s.id === input.serviceId)!;
   const end = new Date(input.start.getTime() + service.durationMin * 60000);
 
-  if (!opts.fromPanel) {
-    const day = localDay(input.start, tz);
-    const busy = await busyBetween(localToUtc(day, 0, tz), localToUtc(addDays(day, 1), 0, tz));
-    const free = slotsForDay(day, { now, durationMin: service.durationMin, busy });
-    if (!free.some((s) => s.getTime() === input.start.getTime())) return { ok: false, status: 409, error: TAKEN };
+  if (!opts.fromPanel && !(await isSlotFree(input.start, service.durationMin, now))) {
+    return { ok: false, status: 409, error: TAKEN };
   }
 
   const { data, error } = await db()
@@ -143,6 +147,32 @@ export async function findById(id: string): Promise<BookingRow | null> {
 
 export function canPatientCancel(b: BookingRow, now = new Date()): boolean {
   return b.status === "confirmed" && new Date(b.starts_at).getTime() - now.getTime() > booking.cancelUntilHours * 3600000;
+}
+
+export type RescheduleResult = { ok: true; booking: BookingRow } | { ok: false; error: string; status: number };
+
+/** Pacjent przenosi swoją wizytę na inny wolny termin (te same zasady co przy odwołaniu). */
+export async function rescheduleBooking(b: BookingRow, start: Date, now = new Date()): Promise<RescheduleResult> {
+  if (!canPatientCancel(b, now)) {
+    return { ok: false, status: 403, error: `Termin można zmienić online najpóźniej ${booking.cancelUntilHours} godz. przed wizytą.` };
+  }
+  const service = services.find((s) => s.id === b.service_id) ?? services[0];
+  if (!(await isSlotFree(start, service.durationMin, now))) return { ok: false, status: 409, error: TAKEN };
+  const end = new Date(start.getTime() + service.durationMin * 60000);
+
+  const { data, error } = await db()
+    .from("bookings")
+    .update({ starts_at: start.toISOString(), ends_at: end.toISOString(), reminder_sent_at: null, thanks_sent_at: null })
+    .eq("id", b.id)
+    .eq("status", "confirmed")
+    .select()
+    .single();
+  if (error) {
+    if (error.code === "23P01") return { ok: false, status: 409, error: TAKEN };
+    throw error;
+  }
+  await moveEvent(b.google_event_id, start, end).catch((e) => console.error("Nie udało się przesunąć wydarzenia Google:", e));
+  return { ok: true, booking: data as BookingRow };
 }
 
 export async function setStatus(b: BookingRow, status: BookingRow["status"]): Promise<void> {
