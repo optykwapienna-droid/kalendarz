@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import { booking, business, questions, services } from "@/config";
 import { db, type BlockRow, type BookingRow, type SmsLogRow } from "./db";
 import { createEvent, deleteEvent, googleBusy, listAppEvents, moveEvent } from "./google";
-import { visibleSlots } from "./hidden";
+import { fakeTaken } from "./fakeTaken";
 import { slotsForDay, type Busy } from "./slots";
 import { planSync } from "./syncPlan";
 import { addDays, localDay, localToUtc } from "./time";
@@ -48,7 +48,10 @@ export async function busyBetween(from: Date, to: Date): Promise<Busy[]> {
   return [...b.data, ...k.data].map((r) => ({ start: new Date(r.starts_at), end: new Date(r.ends_at) })).concat(g);
 }
 
-/** Wolne terminy dla kolejnych `days` dni, zaczynając od `fromDay`. */
+/**
+ * Terminy dla kolejnych `days` dni od `fromDay`: wolne (`slots`) oraz pokazywane jako zajęte
+ * (`taken`): prawdziwie zarezerwowane godziny z grafiku i kilka pozornie zajętych spoza niego.
+ */
 export async function availability(serviceId: string, fromDay: string, days: number, now = new Date()) {
   const service = services.find((s) => s.id === serviceId);
   if (!service) throw new Error("Nieznana usługa");
@@ -56,21 +59,23 @@ export async function availability(serviceId: string, fromDay: string, days: num
   if (fromDay < today) fromDay = today;
   const toDay = addDays(fromDay, days);
   const busy = await busyBetween(localToUtc(fromDay, 0, tz), localToUtc(toDay, 0, tz));
-  const result: Record<string, string[]> = {};
+  const slots: Record<string, string[]> = {};
+  const taken: Record<string, string[]> = {};
   for (let d = fromDay; d < toDay; d = addDays(d, 1)) {
-    result[d] = visibleSlots(d, today, slotsForDay(d, { now, durationMin: service.durationMin, busy })).map((s) =>
-      s.toISOString(),
-    );
+    const free = slotsForDay(d, { now, durationMin: service.durationMin, busy });
+    const all = slotsForDay(d, { now, durationMin: service.durationMin, busy: [] });
+    const booked = all.filter((s) => !free.some((f) => f.getTime() === s.getTime()));
+    slots[d] = free.map((s) => s.toISOString());
+    taken[d] = all.length ? [...booked, ...fakeTaken(d, now, service.durationMin)].map((s) => s.toISOString()) : [];
   }
-  return result;
+  return { slots, taken };
 }
 
 /** Czy pacjent może wybrać ten termin: w godzinach otwarcia i niezajęty. */
 async function isSlotFree(start: Date, durationMin: number, now: Date): Promise<boolean> {
   const day = localDay(start, tz);
   const busy = await busyBetween(localToUtc(day, 0, tz), localToUtc(addDays(day, 1), 0, tz));
-  const free = visibleSlots(day, localDay(now, tz), slotsForDay(day, { now, durationMin, busy }));
-  return free.some((s) => s.getTime() === start.getTime());
+  return slotsForDay(day, { now, durationMin, busy }).some((s) => s.getTime() === start.getTime());
 }
 
 export type CreateResult = { ok: true; booking: BookingRow } | { ok: false; error: string; status: number };

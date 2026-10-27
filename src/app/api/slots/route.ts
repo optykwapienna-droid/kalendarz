@@ -13,6 +13,6 @@ export async function GET(req: NextRequest) {
   if (!isDay(from) || !services.some((s) => s.id === serviceId)) {
     return NextResponse.json({ error: "Niepoprawne parametry" }, { status: 400 });
   }
-  const slots = await availability(serviceId, from, days);
-  return NextResponse.json({ slots }, { headers: { "Cache-Control": "no-store" } });
+  const { slots, taken } = await availability(serviceId, from, days);
+  return NextResponse.json({ slots, taken }, { headers: { "Cache-Control": "no-store" } });
 }
