@@ -63,5 +63,12 @@ export function renderSms(body: string, c: SmsContext): string {
     "{opinia}": business.googleReviewUrl,
     ...honorifics(c.gender ?? null),
   };
-  return toGsm(body.replace(/\{[a-z]+\}/g, (m) => values[m] ?? m)).replace(/\s+/g, " ").trim();
+  // Zachowujemy podział na linie z szablonu, porządkujemy tylko spacje i puste linie
+  return toGsm(body.replace(/\{[a-z]+\}/g, (m) => values[m] ?? m))
+    .replace(/\r/g, "")
+    .split("\n")
+    .map((l) => l.replace(/[ \t]+/g, " ").trim())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
