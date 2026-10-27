@@ -7,7 +7,7 @@ import { answersText, fullName, listBlocks, listBookings, serviceName, smsHistor
 import { googleEnabled } from "@/lib/google";
 import { listTemplates, siteUrl } from "@/lib/sms";
 import { SMS_KINDS } from "@/lib/smsText";
-import { formatDate, formatTime, localDay } from "@/lib/time";
+import { formatDate, formatTime, isDay, localDay } from "@/lib/time";
 import Nav from "./Nav";
 
 export const dynamic = "force-dynamic";
@@ -106,9 +106,9 @@ function Row({ b, templates, log, past }: { b: BookingRow; templates: TemplateRo
   );
 }
 
-export default async function Panel({ searchParams }: { searchParams: Promise<{ komunikat?: string }> }) {
+export default async function Panel({ searchParams }: { searchParams: Promise<{ komunikat?: string; dzien?: string }> }) {
   if (!(await isAdmin())) redirect("/panel/login");
-  const { komunikat } = await searchParams;
+  const { komunikat, dzien } = await searchParams;
 
   const now = new Date();
   const syncError = await syncFromGoogle(now).then(
@@ -138,7 +138,7 @@ export default async function Panel({ searchParams }: { searchParams: Promise<{ 
           <div className="row">
             <div>
               <label htmlFor="day">Dzień</label>
-              <input id="day" name="day" type="date" required defaultValue={today} />
+              <input id="day" name="day" type="date" required defaultValue={isDay(dzien) ? dzien : today} />
             </div>
             <div>
               <label htmlFor="time">Godzina</label>
