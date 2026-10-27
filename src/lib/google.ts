@@ -25,7 +25,21 @@ export function normalizePrivateKey(raw: string | undefined): string | undefined
   }
   v = v.replace(/^"?private_key"?\s*:\s*/, "").replace(/^[",\s]+|[",\s]+$/g, "");
   v = v.replace(/\\n/g, "\n").replace(/\r/g, "").trim();
+  // Składamy PEM od nowa, gdy nowe linie zamieniły się w spacje lub zniknęły.
+  const m = /-----BEGIN ([A-Z ]*)PRIVATE KEY-----([\s\S]*?)-----END [A-Z ]*PRIVATE KEY-----/.exec(v);
+  if (m) {
+    const body = m[2].replace(/[^A-Za-z0-9+/=]/g, "");
+    v = `-----BEGIN ${m[1]}PRIVATE KEY-----\n${body.match(/.{1,64}/g)?.join("\n") ?? ""}\n-----END ${m[1]}PRIVATE KEY-----`;
+  }
   return v || undefined;
+}
+
+/** Opis klucza do komunikatu o błędzie: bez treści klucza, tylko jego kształt. */
+export function describeKey(key: string): string {
+  const lines = key.split("\n").filter(Boolean);
+  const begin = /-----BEGIN [A-Z ]*PRIVATE KEY-----/.exec(key)?.[0] ?? "brak nagłówka BEGIN PRIVATE KEY";
+  const end = /-----END [A-Z ]*PRIVATE KEY-----/.test(key) ? "jest END" : "brak END (klucz ucięty?)";
+  return `${key.length} znaków, ${lines.length} linii, ${begin}, ${end}`;
 }
 
 function config(): Config | null {
@@ -52,7 +66,12 @@ async function accessToken(c: Config): Promise<string> {
     iat: now,
     exp: now + 3600,
   })}`;
-  const signature = createSign("RSA-SHA256").update(unsigned).sign(c.key).toString("base64url");
+  let signature: string;
+  try {
+    signature = createSign("RSA-SHA256").update(unsigned).sign(c.key).toString("base64url");
+  } catch {
+    throw new Error(`Nieczytelny GOOGLE_PRIVATE_KEY: ${describeKey(c.key)}`);
+  }
   const res = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
