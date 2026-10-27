@@ -24,7 +24,7 @@ export default function Privacy() {
       </p>
       <p>
         <strong>Odbiorcy:</strong> dostawcy usług technicznych działający na nasze zlecenie: hosting aplikacji i bazy
-        danych (serwery w Unii Europejskiej), bramka SMS oraz Google (kalendarz gabinetu). Nie sprzedajemy ani nie udostępniamy
+        danych (serwery w Unii Europejskiej), usługa przekazująca SMS-y do telefonu gabinetu oraz Google (kalendarz gabinetu). Nie sprzedajemy ani nie udostępniamy
         danych w celach marketingowych.
       </p>
       <p>

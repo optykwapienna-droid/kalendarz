@@ -1,6 +1,6 @@
-import { business } from "@/config";
 import { db, type BookingRow, type SmsKind, type TemplateRow } from "./db";
-import { renderSms, toGsm } from "./smsText";
+import { sendSms } from "./smsGateway";
+import { renderSms } from "./smsText";
 
 export function siteUrl(): string {
   return (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
@@ -8,26 +8,6 @@ export function siteUrl(): string {
 
 export function visitUrl(b: BookingRow): string {
   return `${siteUrl()}/o/${b.cancel_token}`;
-}
-
-export async function sendSms(phone: string, message: string): Promise<void> {
-  const token = process.env.SMSAPI_TOKEN;
-  if (!token) {
-    console.log(`[SMS pominięty, brak SMSAPI_TOKEN] ${phone}: ${message}`);
-    return;
-  }
-  const res = await fetch("https://api.smsapi.pl/sms.do", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      to: phone,
-      message: toGsm(message),
-      from: process.env.SMS_SENDER ?? "Test",
-      format: "json",
-    }),
-  });
-  const body = await res.json().catch(() => ({}));
-  if (!res.ok || body.error) throw new Error(`SMSAPI: ${body.message ?? res.status}`);
 }
 
 export async function listTemplates(): Promise<TemplateRow[]> {
