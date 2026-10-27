@@ -15,6 +15,12 @@ export const metadata: Metadata = { title: "Panel gabinetu", robots: { index: fa
 
 const tz = business.timezone;
 
+// Godziny do wyboru przy ręcznym dodawaniu wizyty: co pół godziny, 8:00–20:30
+const PANEL_TIMES = Array.from({ length: 26 }, (_, i) => {
+  const m = 8 * 60 + i * 30;
+  return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+});
+
 function dt(iso: string) {
   const d = new Date(iso);
   return `${formatDate(d, tz)}, ${formatTime(d, tz)}`;
@@ -142,7 +148,14 @@ export default async function Panel({ searchParams }: { searchParams: Promise<{ 
             </div>
             <div>
               <label htmlFor="time">Godzina</label>
-              <input id="time" name="time" type="time" required step={900} />
+              <select id="time" name="time" required defaultValue="">
+                <option value="" disabled>
+                  Wybierz…
+                </option>
+                {PANEL_TIMES.map((t) => (
+                  <option key={t}>{t}</option>
+                ))}
+              </select>
             </div>
           </div>
           <div className="row">
