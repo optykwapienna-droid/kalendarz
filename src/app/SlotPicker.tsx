@@ -42,6 +42,7 @@ export default function SlotPicker({
 }) {
   const [from, setFrom] = useState(today);
   const [slots, setSlots] = useState<Record<string, string[]> | null>(null);
+  const [taken, setTaken] = useState<Record<string, string[]>>({});
   const [day, setDay] = useState<string | null>(null);
   const [error, setError] = useState(false);
 
@@ -58,6 +59,7 @@ export default function SlotPicker({
           list[d] = exclude ? s.filter((x) => x !== exclude) : s;
         }
         setSlots(list);
+        setTaken((j.taken as Record<string, string[]>) ?? {});
         const first = Object.keys(list).find((d) => list[d].length > 0) ?? null;
         setDay((cur) => (cur && list[cur]?.length ? cur : first));
       })
@@ -110,11 +112,17 @@ export default function SlotPicker({
       {!hasAny && <p className="muted">Brak wolnych terminów w tych dniach. Sprawdź późniejsze terminy.</p>}
       {day && slots[day]?.length > 0 && (
         <div className="slots">
-          {slots[day].map((s) => (
-            <button type="button" key={s} className={`slot${s === value ? " active" : ""}`} onClick={() => onChange(s)}>
-              {fmtTime.format(new Date(s))}
-            </button>
-          ))}
+          {[...slots[day], ...(taken[day] ?? [])].sort().map((s) =>
+            slots[day].includes(s) ? (
+              <button type="button" key={s} className={`slot${s === value ? " active" : ""}`} onClick={() => onChange(s)}>
+                {fmtTime.format(new Date(s))}
+              </button>
+            ) : (
+              <button type="button" key={s} className="slot taken" disabled title="Termin zajęty">
+                {fmtTime.format(new Date(s))}
+              </button>
+            ),
+          )}
         </div>
       )}
     </>

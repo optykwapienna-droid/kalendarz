@@ -67,11 +67,11 @@ export const booking = {
   cancelUntilHours: 2,
   // Po ilu miesiącach od wizyty dane rezerwacji są usuwane (RODO)
   retentionMonths: 12,
-  // Jaką część wolnych godzin pacjent widzi jako zajęte (0 = wszystkie widoczne).
-  // Wybór jest stały dla danej godziny, a w każdym dniu zostaje co najmniej jeden wolny termin.
-  hiddenShare: 0.33,
-  // Od którego dnia w przód ukrywamy (0 = od dziś); najbliższe dni są w pełni dostępne
-  hideFromDay: 3,
+  // Pozornie zajęte godziny spoza grafiku, pokazywane pacjentom obok prawdziwych terminów,
+  // żeby kalendarz wyglądał na wypełniony. [min, max] na dzień; [0, 0] wyłącza.
+  fakeTakenPerDay: [2, 3] as [number, number],
+  // Z jakiego zakresu godzin je losujemy (co pół godziny)
+  fakeTakenHours: { from: "09:00", to: "18:30" },
 };
 
 // Pytania przed wizytą, wszystkie nieobowiązkowe. Celowo bez pytań o choroby
