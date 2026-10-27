@@ -98,3 +98,28 @@ tr.cancelled td { color: var(--muted); text-decoration: line-through; }
 .sms-menu select { width: auto; max-width: 190px; padding: 6px 8px; font-size: 0.85rem; }
 details summary { cursor: pointer; }
 code { background: var(--brand-soft); padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+
+/* Kalendarz miesiąca w panelu */
+.cal-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-top: 8px; }
+.cal-wd { text-align: center; font-size: 0.75rem; color: var(--muted); padding: 2px 0; }
+.cal-day { position: relative; min-height: 58px; border: 1px solid var(--line); border-radius: 8px; padding: 4px; color: var(--text); text-decoration: none; background: #fff; overflow: hidden; }
+.cal-day.other { opacity: 0.4; }
+.cal-day.closed { background: #eef1f2; }
+.cal-day.blocked { background: repeating-linear-gradient(135deg, #fff, #fff 6px, #fbe9e7 6px, #fbe9e7 12px); }
+.cal-day.today .cal-num { background: var(--brand); color: #fff; border-radius: 999px; padding: 0 6px; }
+.cal-day.selected { border: 2px solid var(--brand); padding: 3px; }
+.cal-num { font-size: 0.85rem; font-weight: 600; }
+.cal-count { position: absolute; right: 4px; bottom: 4px; background: var(--brand-soft); color: var(--brand); border-radius: 999px; font-size: 0.75rem; font-weight: 700; padding: 0 7px; }
+.cal-list { display: none; }
+.cal-list .no-show { text-decoration: line-through; }
+.cal-legend { display: inline-block; width: 12px; height: 12px; border: 1px solid var(--line); border-radius: 3px; vertical-align: -1px; }
+.cal-legend.closed { background: #eef1f2; }
+.cal-legend.blocked { background: repeating-linear-gradient(135deg, #fff, #fff 3px, #fbe9e7 3px, #fbe9e7 6px); }
+.cal-visit { display: flex; gap: 14px; padding: 10px 0; border-top: 1px solid var(--line); }
+@media (min-width: 640px) {
+  .cal-day { min-height: 92px; }
+  .cal-count { display: none; }
+  .cal-list { display: block; font-size: 0.72rem; line-height: 1.3; margin-top: 2px; }
+  .cal-list span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
