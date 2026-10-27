@@ -84,7 +84,8 @@ const TAKEN = "Ten termin jest już zajęty. Wybierz inny.";
 
 /**
  * Zapisuje wizytę. Pacjent może wybrać tylko wolny termin w godzinach otwarcia;
- * z panelu (`fromPanel`) można wpisać dowolną godzinę, byle nie nachodziła na inną wizytę.
+ * z panelu (`fromPanel`) można wpisać dowolną godzinę, byle nie nachodziła na inną wizytę, blokadę
+ * ani wydarzenie w Kalendarzu Google.
  */
 export async function createBooking(input: Validated, opts: { fromPanel?: boolean; now?: Date } = {}): Promise<CreateResult> {
   const now = opts.now ?? new Date();
@@ -93,6 +94,12 @@ export async function createBooking(input: Validated, opts: { fromPanel?: boolea
 
   if (!opts.fromPanel && !(await isSlotFree(input.start, service.durationMin, now))) {
     return { ok: false, status: 409, error: TAKEN };
+  }
+  if (opts.fromPanel) {
+    const busy = await busyBetween(input.start, end);
+    if (busy.some((b) => b.start < end && b.end > input.start)) {
+      return { ok: false, status: 409, error: "Ta godzina jest już zajęta (wizyta, blokada lub wydarzenie w Kalendarzu Google). Wybierz inną." };
+    }
   }
 
   const { data, error } = await db()
