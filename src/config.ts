@@ -87,6 +87,7 @@ export const questions: Question[] = [
       "Okulary progresywne",
       "Okulary do komputera",
       "Kontrola wzroku",
+      "Mam receptę, tylko wybór oprawki",
       "Nie wiem, proszę o poradę",
     ],
   },
