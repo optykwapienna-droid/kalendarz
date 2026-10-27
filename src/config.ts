@@ -40,15 +40,20 @@ export const services: Service[] = [
   },
 ];
 
-// Godziny przyjęć. Każdy dzień może mieć kilka przedziałów, np. przerwę w środku dnia.
+// Godziny przyjęć: w każdym przedziale wizyty zaczynają się co `slotStepMin` minut
+// i muszą się w nim zmieścić. Przedział o długości jednej wizyty daje jedną stałą godzinę.
 export const openingHours: Record<Weekday, { from: string; to: string }[]> = {
   0: [],
-  1: [{ from: "10:00", to: "18:00" }],
-  2: [{ from: "10:00", to: "18:00" }],
-  3: [{ from: "10:00", to: "18:00" }],
-  4: [{ from: "10:00", to: "18:00" }],
-  5: [{ from: "10:00", to: "18:00" }],
-  6: [{ from: "10:00", to: "14:00" }],
+  // pon–śr: 10:30, 15:00, 16:00, 17:00
+  1: [{ from: "10:30", to: "11:30" }, { from: "15:00", to: "18:00" }],
+  2: [{ from: "10:30", to: "11:30" }, { from: "15:00", to: "18:00" }],
+  3: [{ from: "10:30", to: "11:30" }, { from: "15:00", to: "18:00" }],
+  // czwartek nieczynne
+  4: [],
+  // piątek: 10:30, 15:00, 16:00
+  5: [{ from: "10:30", to: "11:30" }, { from: "15:00", to: "17:00" }],
+  // sobota: 11:00, 12:00, 13:00
+  6: [{ from: "11:00", to: "14:00" }],
 };
 
 export const booking = {
