@@ -113,7 +113,7 @@ export default async function Panel({ searchParams }: { searchParams: Promise<{ 
   const now = new Date();
   const syncError = await syncFromGoogle(now).then(
     () => null,
-    (e) => (console.error("Synchronizacja z Google nieudana:", e), "Nie udało się pobrać zmian z Kalendarza Google."),
+    (e) => (console.error("Synchronizacja z Google nieudana:", e), `Nie udało się pobrać zmian z Kalendarza Google (${e instanceof Error ? e.message.slice(0, 300) : e}).`),
   );
   const [rows, blocks, templates] = await Promise.all([
     listBookings(new Date(now.getTime() - 7 * 86400000), new Date(now.getTime() + 90 * 86400000)),

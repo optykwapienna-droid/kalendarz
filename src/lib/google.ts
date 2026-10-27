@@ -9,10 +9,29 @@ export const APP_TAG = "optyk-rezerwacje";
 
 type Config = { email: string; key: string; calendarId: string };
 
+/**
+ * Klucz prywatny wklejony do Vercel ręcznie: przyjmuje cały plik JSON konta usługi,
+ * samą wartość `private_key` (z cudzysłowami lub bez) oraz `\n` zamiast nowych linii.
+ */
+export function normalizePrivateKey(raw: string | undefined): string | undefined {
+  let v = raw?.trim();
+  if (!v) return undefined;
+  if (v.startsWith("{")) {
+    try {
+      v = String(JSON.parse(v).private_key ?? "").trim();
+    } catch {
+      // nie JSON, traktujemy jak sam klucz
+    }
+  }
+  v = v.replace(/^"?private_key"?\s*:\s*/, "").replace(/^[",\s]+|[",\s]+$/g, "");
+  v = v.replace(/\\n/g, "\n").replace(/\r/g, "").trim();
+  return v || undefined;
+}
+
 function config(): Config | null {
-  const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const key = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-  const calendarId = process.env.GOOGLE_CALENDAR_ID;
+  const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL?.trim();
+  const key = normalizePrivateKey(process.env.GOOGLE_PRIVATE_KEY);
+  const calendarId = process.env.GOOGLE_CALENDAR_ID?.trim();
   return email && key && calendarId ? { email, key, calendarId } : null;
 }
 

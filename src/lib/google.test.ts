@@ -63,3 +63,25 @@ describe("Kalendarz Google", () => {
     expect(calls).toHaveLength(0);
   });
 });
+
+describe("normalizePrivateKey", async () => {
+  const pem = "-----BEGIN PRIVATE KEY-----\nABC\nDEF\n-----END PRIVATE KEY-----";
+  const escaped = "-----BEGIN PRIVATE KEY-----\\nABC\\nDEF\\n-----END PRIVATE KEY-----\\n";
+
+  it("zamienia \\n na nowe linie", async () => {
+    expect((await import("./google")).normalizePrivateKey(escaped)).toBe(pem);
+  });
+  it("usuwa cudzysłowy, przecinek i spacje", async () => {
+    expect((await import("./google")).normalizePrivateKey(`  "${escaped}",  `)).toBe(pem);
+  });
+  it("przyjmuje wklejone z nazwą pola", async () => {
+    expect((await import("./google")).normalizePrivateKey(`"private_key": "${escaped}",`)).toBe(pem);
+  });
+  it("przyjmuje cały plik JSON", async () => {
+    expect((await import("./google")).normalizePrivateKey(JSON.stringify({ type: "service_account", private_key: pem + "\n" }))).toBe(pem);
+  });
+  it("pusty klucz to brak klucza", async () => {
+    expect((await import("./google")).normalizePrivateKey("  ")).toBeUndefined();
+    expect((await import("./google")).normalizePrivateKey(undefined)).toBeUndefined();
+  });
+});
