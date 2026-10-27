@@ -9,6 +9,8 @@ export type Service = {
   description: string;
   durationMin: number;
   price?: string;
+  // Dopisek do ceny, np. promocja
+  priceNote?: string;
 };
 
 export type Question =
@@ -37,6 +39,8 @@ export const services: Service[] = [
     description:
       "Komputerowe i subiektywne badanie ostrości wzroku wykonywane przez optometrystę, z doborem korekcji okularowej.",
     durationMin: 60,
+    price: "200 zł",
+    priceNote: "1 zł przy zakupie kompletnej pary okularów",
   },
 ];
 
