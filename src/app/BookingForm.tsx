@@ -95,6 +95,12 @@ export default function BookingForm({
         <p className="muted small" style={{ marginTop: -6 }}>
           {service.name} · {service.durationMin} min
         </p>
+        {service.price && (
+          <p className="price">
+            Koszt badania: <strong>{service.price}</strong>
+            {service.priceNote && <> · {service.priceNote}</>}
+          </p>
+        )}
         <SlotPicker serviceId={serviceId} value={start} onChange={setStart} reload={reload} />
       </section>
 
