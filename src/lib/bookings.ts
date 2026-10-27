@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { booking, business, questions, services } from "@/config";
 import { db, type BlockRow, type BookingRow, type SmsLogRow } from "./db";
 import { createEvent, deleteEvent, googleBusy, listAppEvents, moveEvent } from "./google";
+import { visibleSlots } from "./hidden";
 import { slotsForDay, type Busy } from "./slots";
 import { planSync } from "./syncPlan";
 import { addDays, localDay, localToUtc } from "./time";
@@ -57,7 +58,9 @@ export async function availability(serviceId: string, fromDay: string, days: num
   const busy = await busyBetween(localToUtc(fromDay, 0, tz), localToUtc(toDay, 0, tz));
   const result: Record<string, string[]> = {};
   for (let d = fromDay; d < toDay; d = addDays(d, 1)) {
-    result[d] = slotsForDay(d, { now, durationMin: service.durationMin, busy }).map((s) => s.toISOString());
+    result[d] = visibleSlots(d, today, slotsForDay(d, { now, durationMin: service.durationMin, busy })).map((s) =>
+      s.toISOString(),
+    );
   }
   return result;
 }
@@ -66,7 +69,8 @@ export async function availability(serviceId: string, fromDay: string, days: num
 async function isSlotFree(start: Date, durationMin: number, now: Date): Promise<boolean> {
   const day = localDay(start, tz);
   const busy = await busyBetween(localToUtc(day, 0, tz), localToUtc(addDays(day, 1), 0, tz));
-  return slotsForDay(day, { now, durationMin, busy }).some((s) => s.getTime() === start.getTime());
+  const free = visibleSlots(day, localDay(now, tz), slotsForDay(day, { now, durationMin, busy }));
+  return free.some((s) => s.getTime() === start.getTime());
 }
 
 export type CreateResult = { ok: true; booking: BookingRow } | { ok: false; error: string; status: number };
