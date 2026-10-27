@@ -25,7 +25,7 @@ export const business = {
   phone: "", // TODO: uzupełnić numer telefonu salonu
   email: "", // TODO: uzupełnić adres e-mail salonu
   // Link „Napisz opinię” z Profilu Firmy w Google (Udostępnij profil -> Poproś o opinie)
-  googleReviewUrl: "", // TODO: uzupełnić
+  googleReviewUrl: "https://g.page/r/CcMK2j77FxMfEBM/review",
   googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Optyk+Wapienna+Wapienna+20+Wroc%C5%82aw",
   timezone: "Europe/Warsaw",
 };
