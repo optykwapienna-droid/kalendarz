@@ -16,6 +16,7 @@ const sample = {
   firstName: "Katarzyna",
   lastName: "Nowak",
   start: new Date("2026-11-03T09:00:00Z"),
+  gender: "f" as const,
   link: `${(process.env.SITE_URL ?? "http://localhost:3000").replace(/\/$/, "")}/o/AbCdEfGhIjKlMnOp`,
 };
 

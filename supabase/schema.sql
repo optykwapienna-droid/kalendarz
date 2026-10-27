@@ -21,6 +21,8 @@ create table if not exists bookings (
   confirmation_sent_at timestamptz,
   reminder_sent_at timestamptz,
   thanks_sent_at timestamptz,
+  -- Zwrot w SMS-ach poprawiony w panelu (f = Pani, m = Pan); null = zgadujemy z imienia
+  gender text check (gender in ('f', 'm')),
   created_at timestamptz not null default now(),
   -- Dwie potwierdzone wizyty nie mogą na siebie nachodzić, nawet przy jednoczesnej rezerwacji
   constraint bookings_no_overlap exclude using gist (
@@ -83,3 +85,6 @@ alter table bookings enable row level security;
 alter table blocks enable row level security;
 alter table sms_templates enable row level security;
 alter table sms_log enable row level security;
+
+-- Dla istniejących baz
+alter table bookings add column if not exists gender text check (gender in ('f', 'm'));

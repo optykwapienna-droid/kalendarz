@@ -18,6 +18,8 @@ export type BookingRow = {
   confirmation_sent_at: string | null;
   reminder_sent_at: string | null;
   thanks_sent_at: string | null;
+  // Ustawiona ręcznie w panelu; null = zgadujemy z imienia
+  gender: "f" | "m" | null;
   created_at: string;
 };
 

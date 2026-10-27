@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { business, services } from "@/config";
 import { isAdmin } from "@/lib/auth";
 import { createBooking, findById, setStatus } from "@/lib/bookings";
+import { db } from "@/lib/db";
 import { sendBookingSms } from "@/lib/sms";
 import { isDay, localToUtc, parseHm } from "@/lib/time";
 import { validateBooking } from "@/lib/validate";
@@ -47,6 +48,11 @@ export async function POST(req: NextRequest) {
 
   const b = await findById(String(f.get("id") ?? ""));
   if (!b) return back(req);
+  if (action === "gender") {
+    const g = String(f.get("gender") ?? "");
+    await db().from("bookings").update({ gender: g === "f" || g === "m" ? g : null }).eq("id", b.id);
+    return back(req, "Zwrot w SMS-ach zapisany.");
+  }
   if (action === "cancel") await setStatus(b, "cancelled");
   if (action === "no_show") await setStatus(b, "no_show");
   if (action === "showed") await setStatus(b, "confirmed");

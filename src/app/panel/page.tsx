@@ -4,6 +4,7 @@ import { business } from "@/config";
 import { isAdmin } from "@/lib/auth";
 import type { BookingRow, SmsLogRow, TemplateRow } from "@/lib/db";
 import { answersText, fullName, listBlocks, listBookings, serviceName, smsHistory, syncFromGoogle } from "@/lib/bookings";
+import { guessGender } from "@/lib/gender";
 import { googleEnabled } from "@/lib/google";
 import { listTemplates, siteUrl } from "@/lib/sms";
 import { SMS_KINDS } from "@/lib/smsText";
@@ -78,6 +79,23 @@ function Action({ b, action, label, danger }: { b: BookingRow; action: string; l
   );
 }
 
+function GenderMenu({ b }: { b: BookingRow }) {
+  const guess = guessGender(b.first_name);
+  const auto = guess === "f" ? "Pani" : guess === "m" ? "Pan" : "Dzień dobry";
+  return (
+    <form method="post" action="/api/admin/booking" className="sms-menu">
+      <input type="hidden" name="id" value={b.id} />
+      <input type="hidden" name="action" value="gender" />
+      <select name="gender" defaultValue={b.gender ?? ""} aria-label="Zwrot w SMS">
+        <option value="">Zwrot: {auto} (auto)</option>
+        <option value="f">Zwrot: Pani</option>
+        <option value="m">Zwrot: Pan</option>
+      </select>
+      <button className="btn secondary small">Zmień</button>
+    </form>
+  );
+}
+
 function Row({ b, templates, log, past }: { b: BookingRow; templates: TemplateRow[]; log?: SmsLogRow[]; past?: boolean }) {
   return (
     <tr className={b.status !== "confirmed" ? "cancelled" : ""}>
@@ -98,6 +116,7 @@ function Row({ b, templates, log, past }: { b: BookingRow; templates: TemplateRo
       <td>
         <div className="actions">
           <SmsMenu b={b} templates={templates} />
+          <GenderMenu b={b} />
           {b.status === "confirmed" && !past && <Action b={b} action="cancel" label="Odwołaj" danger />}
           {b.status === "confirmed" && past && <Action b={b} action="no_show" label="Nie przyszedł" />}
           {b.status === "no_show" && <Action b={b} action="showed" label="Jednak był" />}
