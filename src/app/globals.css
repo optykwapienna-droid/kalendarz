@@ -90,7 +90,7 @@ table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
 th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
 tr.cancelled td { color: var(--muted); text-decoration: line-through; }
 .table-scroll { overflow-x: auto; }
-.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
 .row > div { flex: 1 1 140px; }
 
 .actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
