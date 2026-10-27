@@ -65,7 +65,7 @@ describe("Kalendarz Google", () => {
 });
 
 describe("normalizePrivateKey", async () => {
-  const pem = "-----BEGIN PRIVATE KEY-----\nABC\nDEF\n-----END PRIVATE KEY-----";
+  const pem = "-----BEGIN PRIVATE KEY-----\nABCDEF\n-----END PRIVATE KEY-----";
   const escaped = "-----BEGIN PRIVATE KEY-----\\nABC\\nDEF\\n-----END PRIVATE KEY-----\\n";
 
   it("zamienia \\n na nowe linie", async () => {
@@ -83,5 +83,26 @@ describe("normalizePrivateKey", async () => {
   it("pusty klucz to brak klucza", async () => {
     expect((await import("./google")).normalizePrivateKey("  ")).toBeUndefined();
     expect((await import("./google")).normalizePrivateKey(undefined)).toBeUndefined();
+  });
+});
+
+describe("describeKey", () => {
+  it("opisuje ucięty klucz bez ujawniania treści", async () => {
+    const { describeKey } = await import("./google");
+    const d = describeKey("-----BEGIN PRIVATE KEY-----\nSEKRET");
+    expect(d).toContain("brak END");
+    expect(d).not.toContain("SEKRET");
+  });
+});
+
+describe("normalizePrivateKey z prawdziwym kluczem", () => {
+  it("naprawia klucz, w którym nowe linie zamieniły się w spacje", async () => {
+    const { normalizePrivateKey } = await import("./google");
+    const { createPrivateKey, generateKeyPairSync: gen } = await import("node:crypto");
+    const pem = gen("rsa", { modulusLength: 1024 }).privateKey.export({ type: "pkcs8", format: "pem" }).toString();
+    const broken = pem.replace(/\n/g, " ");
+    expect(() => createPrivateKey(broken)).toThrow();
+    expect(() => createPrivateKey(normalizePrivateKey(broken)!)).not.toThrow();
+    expect(() => createPrivateKey(normalizePrivateKey(JSON.stringify({ private_key: pem }))!)).not.toThrow();
   });
 });
