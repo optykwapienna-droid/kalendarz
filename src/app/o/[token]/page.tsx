@@ -11,10 +11,10 @@ export default async function VisitPage({
   searchParams,
 }: {
   params: Promise<{ token: string }>;
-  searchParams: Promise<{ nowa?: string }>;
+  searchParams: Promise<{ nowa?: string; zmiana?: string }>;
 }) {
   const { token } = await params;
-  const { nowa } = await searchParams;
+  const { nowa, zmiana } = await searchParams;
   const b = await findByToken(token);
 
   if (!b) {
@@ -36,6 +36,7 @@ export default async function VisitPage({
   return (
     <>
       {nowa && !cancelled && <div className="alert ok">Wizyta zarezerwowana. Potwierdzenie wysłaliśmy SMS-em na numer +{b.phone}.</div>}
+      {zmiana && !cancelled && <div className="alert ok">Termin zmieniony. Nowe potwierdzenie wysłaliśmy SMS-em na numer +{b.phone}.</div>}
       {cancelled && <div className="alert error">Ta wizyta została odwołana.</div>}
       <section className="card">
         <h1 style={{ marginTop: 0 }}>{cancelled ? "Odwołana wizyta" : "Twoja wizyta"}</h1>
@@ -62,16 +63,21 @@ export default async function VisitPage({
           </>
         )}
         {canPatientCancel(b) ? (
-          <form method="post" action="/api/cancel">
-            <input type="hidden" name="t" value={token} />
-            <button className="btn danger" type="submit">
-              Odwołaj wizytę
-            </button>
-          </form>
+          <div className="actions">
+            <a className="btn" href={`/o/${encodeURIComponent(token)}/zmien`}>
+              Zmień termin
+            </a>
+            <form method="post" action="/api/cancel">
+              <input type="hidden" name="t" value={token} />
+              <button className="btn danger" type="submit">
+                Odwołaj wizytę
+              </button>
+            </form>
+          </div>
         ) : (
           !cancelled && (
             <p className="muted small">
-              Wizytę można odwołać online najpóźniej {booking.cancelUntilHours} godz. przed terminem.
+              Wizytę można zmienić lub odwołać online najpóźniej {booking.cancelUntilHours} godz. przed terminem.
               {business.phone && <> W pilnej sprawie zadzwoń: {business.phone}.</>}
             </p>
           )

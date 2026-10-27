@@ -121,6 +121,15 @@ export async function createEvent(e: CalendarEvent): Promise<string | null> {
   return ev.id;
 }
 
+export async function moveEvent(eventId: string | null, start: Date, end: Date): Promise<void> {
+  const c = config();
+  if (!c || !eventId) return;
+  await call(c, "PATCH", `${cal(c)}/events/${encodeURIComponent(eventId)}`, {
+    start: { dateTime: start.toISOString() },
+    end: { dateTime: end.toISOString() },
+  });
+}
+
 export async function deleteEvent(eventId: string | null): Promise<void> {
   const c = config();
   if (!c || !eventId) return;
