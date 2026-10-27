@@ -8,18 +8,13 @@ import { googleEnabled } from "@/lib/google";
 import { listTemplates, siteUrl } from "@/lib/sms";
 import { SMS_KINDS } from "@/lib/smsText";
 import { formatDate, formatTime, isDay, localDay } from "@/lib/time";
+import DayTimeFields from "./DayTimeFields";
 import Nav from "./Nav";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Panel gabinetu", robots: { index: false } };
 
 const tz = business.timezone;
-
-// Godziny do wyboru przy ręcznym dodawaniu wizyty: co pół godziny, 8:00–20:30
-const PANEL_TIMES = Array.from({ length: 26 }, (_, i) => {
-  const m = 8 * 60 + i * 30;
-  return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
-});
 
 function dt(iso: string) {
   const d = new Date(iso);
@@ -141,23 +136,7 @@ export default async function Panel({ searchParams }: { searchParams: Promise<{ 
         <h2>Dodaj wizytę</h2>
         <form method="post" action="/api/admin/booking">
           <input type="hidden" name="action" value="add" />
-          <div className="row">
-            <div>
-              <label htmlFor="day">Dzień</label>
-              <input id="day" name="day" type="date" required defaultValue={isDay(dzien) ? dzien : today} />
-            </div>
-            <div>
-              <label htmlFor="time">Godzina</label>
-              <select id="time" name="time" required defaultValue="">
-                <option value="" disabled>
-                  Wybierz…
-                </option>
-                {PANEL_TIMES.map((t) => (
-                  <option key={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <DayTimeFields defaultDay={isDay(dzien) ? dzien : today} />
           <div className="row">
             <div>
               <label htmlFor="firstName">Imię</label>
