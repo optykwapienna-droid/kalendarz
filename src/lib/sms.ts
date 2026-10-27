@@ -1,5 +1,6 @@
 import { db, type BookingRow, type SmsKind, type TemplateRow } from "./db";
 import { sendSms } from "./smsGateway";
+import { genderOf } from "./gender";
 import { renderSms } from "./smsText";
 
 export function siteUrl(): string {
@@ -47,6 +48,7 @@ export async function sendBookingSms(b: BookingRow, kind: SmsKind, templateId?: 
     lastName: b.last_name,
     start: new Date(b.starts_at),
     link: visitUrl(b),
+    gender: genderOf(b),
   });
   let error: string | null = null;
   try {

@@ -22,10 +22,10 @@ export const business = {
   street: "ul. Wapienna 20",
   postalCode: "", // TODO: uzupełnić kod pocztowy
   city: "Wrocław",
-  phone: "", // TODO: uzupełnić numer telefonu salonu
+  phone: "502 144 394",
   email: "", // TODO: uzupełnić adres e-mail salonu
   // Link „Napisz opinię” z Profilu Firmy w Google (Udostępnij profil -> Poproś o opinie)
-  googleReviewUrl: "", // TODO: uzupełnić
+  googleReviewUrl: "https://g.page/r/CcMK2j77FxMfEBM/review",
   googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Optyk+Wapienna+Wapienna+20+Wroc%C5%82aw",
   timezone: "Europe/Warsaw",
 };

@@ -1,5 +1,6 @@
 // Czysta logika SMS (bez bazy i sieci), żeby dało się ją testować.
 import { business } from "@/config";
+import { type Gender, honorifics } from "./gender";
 import { formatShortDate, formatTime } from "./time";
 
 export const SMS_KINDS = {
@@ -12,6 +13,10 @@ export const SMS_KINDS = {
 export const PLACEHOLDERS: Record<string, string> = {
   "{imie}": "imię pacjenta",
   "{nazwisko}": "nazwisko pacjenta",
+  "{powitanie}": "„Szanowna Pani” / „Szanowny Panie” (gdy płeć nieznana: „Dzień dobry”)",
+  "{pan}": "Pani / Pan, np. „czy {pan} potwierdza”",
+  "{pana}": "Pani / Pana, np. „zapraszamy {pana}”",
+  "{panu}": "Pani / Panu, np. „dziękujemy {panu}”",
   "{data}": "data wizyty, np. 28.10",
   "{godzina}": "godzina wizyty, np. 10:00",
   "{adres}": "adres salonu",
@@ -42,6 +47,7 @@ export type SmsContext = {
   lastName: string;
   start: Date;
   link: string;
+  gender?: Gender | null;
 };
 
 export function renderSms(body: string, c: SmsContext): string {
@@ -55,6 +61,14 @@ export function renderSms(body: string, c: SmsContext): string {
     "{telefon}": business.phone,
     "{link}": c.link,
     "{opinia}": business.googleReviewUrl,
+    ...honorifics(c.gender ?? null),
   };
-  return toGsm(body.replace(/\{[a-z]+\}/g, (m) => values[m] ?? m)).replace(/\s+/g, " ").trim();
+  // Zachowujemy podział na linie z szablonu, porządkujemy tylko spacje i puste linie
+  return toGsm(body.replace(/\{[a-z]+\}/g, (m) => values[m] ?? m))
+    .replace(/\r/g, "")
+    .split("\n")
+    .map((l) => l.replace(/[ \t]+/g, " ").trim())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
