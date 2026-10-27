@@ -1,0 +1,5 @@
+# Hosting na Netlify (darmowy plan dopuszcza użycie komercyjne).
+# Netlify sam rozpoznaje Next.js i instaluje potrzebny adapter.
+[build]
+  command = "npm run build"
+  publish = ".next"

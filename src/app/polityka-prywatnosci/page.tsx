@@ -23,8 +23,8 @@ export default function Privacy() {
         pytania przed wizytą. Formularz nie zbiera informacji o chorobach ani lekach.
       </p>
       <p>
-        <strong>Odbiorcy:</strong> dostawcy usług technicznych działający na nasze zlecenie: hosting aplikacji i bazy
-        danych (serwery w Unii Europejskiej), usługa przekazująca SMS-y do telefonu gabinetu oraz Google (kalendarz gabinetu). Nie sprzedajemy ani nie udostępniamy
+        <strong>Odbiorcy:</strong> dostawcy usług technicznych działający na nasze zlecenie: baza danych (serwery w Unii
+        Europejskiej), hosting aplikacji, usługa przekazująca SMS-y do telefonu gabinetu oraz Google (kalendarz gabinetu). Nie sprzedajemy ani nie udostępniamy
         danych w celach marketingowych.
       </p>
       <p>

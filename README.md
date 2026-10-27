@@ -39,9 +39,11 @@ Godziny otwarcia, usługi, pytania ankiety i dane gabinetu zmieniasz w jednym pl
    1. Wejdź na console.cloud.google.com, utwórz projekt i włącz **Google Calendar API**.
    2. *IAM i administracja → Konta usługi → Utwórz konto usługi*. Potem *Klucze → Dodaj klucz → JSON*. Z pobranego pliku: `client_email` to `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `private_key` to `GOOGLE_PRIVATE_KEY`.
    3. W Kalendarzu Google: *Ustawienia kalendarza → Udostępnij określonym osobom → Dodaj* adres `client_email` z uprawnieniem **„Wprowadzanie zmian w wydarzeniach”**. *Identyfikator kalendarza* (dla głównego to Twój adres Gmail) wpisz jako `GOOGLE_CALENDAR_ID`.
-4. **Vercel** (hosting, darmowy plan): zaloguj się przez GitHub, *Add New → Project*, wybierz to repozytorium. W *Environment Variables* wpisz zmienne z [`.env.example`](.env.example). Losowe sekrety wygenerujesz poleceniem `openssl rand -base64 32`.
-5. **Domena**: w Vercel *Settings → Domains* dodaj np. `rezerwacje.optykwapienna.pl` i ustaw rekord DNS u rejestratora. Ustaw `SITE_URL` na ten adres.
-6. **Zadanie wieczorne** (`vercel.json`, 17:00 UTC, czyli 18:00 zimą i 19:00 latem): przypomnienia, podziękowania, synchronizacja z Google, usuwanie starych danych. Wymaga `CRON_SECRET`.
+4. **Netlify** (hosting, darmowy plan dopuszczający użycie komercyjne): zaloguj się przez GitHub, *Add new site → Import an existing project*, wybierz to repozytorium (ustawienia budowania Netlify wykryje sam z `netlify.toml`). W *Site configuration → Environment variables* wpisz zmienne z [`.env.example`](.env.example). Losowe sekrety wygenerujesz poleceniem `openssl rand -base64 32`. Po dodaniu zmiennych zrób *Deploys → Trigger deploy*.
+
+   Zamiast Netlify można użyć Vercel (plik `vercel.json` jest gotowy), ale darmowy plan Hobby jest tam tylko do użytku niekomercyjnego.
+5. **Domena**: w Netlify *Domain management* (lub Vercel *Settings → Domains*) dodaj np. `rezerwacje.optykwapienna.pl` i ustaw rekord DNS u rejestratora. Ustaw `SITE_URL` na ten adres.
+6. **Zadanie wieczorne** (Netlify: `netlify/functions/wieczorne-sms.mts`, Vercel: `vercel.json`; 17:00 UTC, czyli 18:00 zimą i 19:00 latem): przypomnienia, podziękowania, synchronizacja z Google, usuwanie starych danych. Wymaga `CRON_SECRET`.
 
 ### Podpięcie do Google i ZnanyLekarz
 
@@ -62,5 +64,5 @@ npm test                     # testy terminów, świąt, walidacji, SMS i synchr
 
 - [ ] Uzupełnić telefon, kod pocztowy i link do opinii Google w `src/config.ts`.
 - [ ] Uzupełnić dane administratora (firma, NIP) w polityce prywatności i dać ją do przejrzenia.
-- [ ] Zaakceptować umowy powierzenia (DPA) w Supabase, Vercel, SMS Gate (lub SMSAPI) i Google.
+- [ ] Zaakceptować umowy powierzenia (DPA) w Supabase, Netlify, SMS Gate (lub SMSAPI) i Google.
 - [ ] Zrobić próbną rezerwację, sprawdzić SMS i wydarzenie w Kalendarzu Google, odwołać.
