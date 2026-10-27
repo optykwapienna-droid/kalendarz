@@ -28,7 +28,7 @@ Godziny otwarcia, usługi, pytania ankiety i dane gabinetu zmieniasz w jednym pl
 
 1. **Supabase** (baza danych, darmowy plan): załóż konto na supabase.com, utwórz projekt w regionie **Central EU (Frankfurt)**. W *SQL Editor* wklej i uruchom [`supabase/schema.sql`](supabase/schema.sql); doda też przykładowe szablony SMS. W *Project Settings → API* skopiuj *Project URL* i klucz *service_role*.
 2. **Telefon do SMS-ów (Android)**:
-   1. Zainstaluj z Google Play aplikację **SMS Gate** (SMS Gateway for Android, sms-gate.app) i zezwól jej na wysyłanie SMS-ów.
+   1. Zainstaluj aplikację **SMS Gateway for Android** (sms-gate.app, autor capcom6 / Aleksandr Soloshenko). Oficjalnie pobiera się ją jako plik APK z [GitHub Releases](https://github.com/capcom6/android-sms-gateway/releases): na telefonie otwórz stronę, pobierz najnowszy plik `.apk` i zezwól przeglądarce na instalowanie aplikacji. Inne aplikacje o podobnych nazwach w Google Play nie będą działać. Po instalacji zezwól aplikacji na wysyłanie SMS-ów.
    2. W ustawieniach aplikacji włącz **Cloud server**, a na ekranie głównym przełącz ją na **Online**. Na zakładce *Home* pojawi się login i hasło: wpisz je jako `SMSGATE_USER` i `SMSGATE_PASSWORD`.
    3. W ustawieniach Androida wyłącz **optymalizację baterii** dla SMS Gate, żeby system jej nie usypiał.
    4. Telefon musi być włączony, naładowany i mieć internet (najlepiej Wi-Fi w salonie). SMS niewysłany w ciągu 12 godz. przepada, a błąd widać w historii SMS w panelu.
