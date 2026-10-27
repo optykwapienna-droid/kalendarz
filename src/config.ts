@@ -22,7 +22,7 @@ export const business = {
   street: "ul. Wapienna 20",
   postalCode: "", // TODO: uzupełnić kod pocztowy
   city: "Wrocław",
-  phone: "", // TODO: uzupełnić numer telefonu salonu
+  phone: "502 144 394",
   email: "", // TODO: uzupełnić adres e-mail salonu
   // Link „Napisz opinię” z Profilu Firmy w Google (Udostępnij profil -> Poproś o opinie)
   googleReviewUrl: "https://g.page/r/CcMK2j77FxMfEBM/review",
