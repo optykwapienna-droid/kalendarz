@@ -18,6 +18,8 @@ const SOURCE_LABELS: Record<string, string> = {
   ig: "Instagram",
   znanylekarz: "ZnanyLekarz",
   telefon: "Telefon",
+  voucher: "Voucher -20%",
+  voucher50: "Voucher -50%",
 };
 
 /** Skąd przyszła rezerwacja: z linku ?zrodlo=… albo „Strona” (wejście bez oznaczenia). */
