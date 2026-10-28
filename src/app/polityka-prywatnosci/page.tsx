@@ -29,7 +29,9 @@ export default function Privacy() {
       </p>
       <p>
         <strong>Okres przechowywania:</strong> dane rezerwacji usuwamy automatycznie {booking.retentionMonths} miesięcy
-        po terminie wizyty. Dokumentacja z badania jest prowadzona osobno, zgodnie z przepisami.
+        po terminie wizyty. Jeśli zaczniesz zapis w formularzu i wpiszesz telefon, ale go nie dokończysz, zachowujemy
+        imię, nazwisko, telefon i wybrany termin przez 7 dni, aby móc oddzwonić i pomóc w umówieniu wizyty (prawnie
+        uzasadniony interes gabinetu). Nie używamy tych danych do reklam. Dokumentacja z badania jest prowadzona osobno, zgodnie z przepisami.
       </p>
       <p>
         <strong>Twoje prawa:</strong> dostęp do danych, ich sprostowanie, usunięcie, ograniczenie przetwarzania, sprzeciw

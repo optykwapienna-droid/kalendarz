@@ -3,6 +3,7 @@ import { booking, business } from "@/config";
 import { safeEqual } from "@/lib/auth";
 import { syncFromGoogle } from "@/lib/bookings";
 import { db, type BookingRow } from "@/lib/db";
+import { purgeOldDrafts } from "@/lib/drafts";
 import { sendBookingSms } from "@/lib/sms";
 import { addDays, localDay, localToUtc } from "@/lib/time";
 
@@ -69,6 +70,7 @@ export async function GET(req: NextRequest) {
   if (del.error) throw del.error;
   await db().from("blocks").delete().lt("ends_at", cutoff.toISOString());
   result.deleted = del.count ?? 0;
+  await purgeOldDrafts(now);
 
   return NextResponse.json(result);
 }
