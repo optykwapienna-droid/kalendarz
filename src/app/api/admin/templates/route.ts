@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { SMS_DEFAULTS } from "@/lib/smsDefaults";
 import { SMS_KINDS } from "@/lib/smsText";
 
 const isId = (s: string) => /^[0-9a-f-]{36}$/.test(s);
@@ -23,6 +24,17 @@ export async function POST(req: NextRequest) {
       const { data: cur } = await db().from("sms_templates").select("kind").eq("id", id).maybeSingle();
       const reset = cur && cur.kind !== kind ? { is_default: false } : {};
       await db().from("sms_templates").update({ kind, name, body, ...reset }).eq("id", id);
+    }
+  } else if (action === "load_defaults") {
+    const { data: all } = await db().from("sms_templates").select("id, name");
+    for (const t of SMS_DEFAULTS) {
+      const cur = (all ?? []).find((r) => r.name === t.name);
+      if (cur) await db().from("sms_templates").update({ kind: t.kind, body: t.body, is_default: false }).eq("id", cur.id);
+      else await db().from("sms_templates").insert({ kind: t.kind, name: t.name, body: t.body });
+    }
+    for (const t of SMS_DEFAULTS.filter((d) => d.isDefault)) {
+      await db().from("sms_templates").update({ is_default: false }).eq("kind", t.kind).eq("is_default", true);
+      await db().from("sms_templates").update({ is_default: true }).eq("name", t.name).eq("kind", t.kind);
     }
   } else if (action === "delete" && isId(id)) {
     await db().from("sms_templates").delete().eq("id", id);
