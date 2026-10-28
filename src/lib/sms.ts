@@ -1,6 +1,10 @@
 import { db, type BookingRow, type SmsKind, type TemplateRow } from "./db";
 import { sendSms } from "./smsGateway";
 import { genderOf } from "./gender";
+import { business } from "@/config";
+import { answersText, fullName } from "./bookings";
+import { formatTime, formatWeekdayDate } from "./time";
+import { normalizePhone } from "./validate";
 import { renderSms } from "./smsText";
 
 export function siteUrl(): string {
@@ -63,3 +67,22 @@ export async function sendBookingSms(b: BookingRow, kind: SmsKind, templateId?: 
   return true;
 }
 
+
+const ADMIN_EVENTS = { new: "Nowa wizyta", moved: "Zmiana terminu", cancelled: "Odwołana wizyta" } as const;
+
+/** SMS do gabinetu o zmianie w wizytach dokonanej przez pacjenta. Błąd tylko logujemy. */
+export async function notifyAdmin(event: keyof typeof ADMIN_EVENTS, b: BookingRow, oldStart?: string): Promise<void> {
+  const to = business.adminPhone && normalizePhone(business.adminPhone);
+  if (!to) return;
+  const tz = business.timezone;
+  const when = (iso: string) => `${formatWeekdayDate(new Date(iso), tz)}, ${formatTime(new Date(iso), tz)}`;
+  const text = [
+    `${ADMIN_EVENTS[event]}: ${fullName(b)}`,
+    oldStart ? `${when(oldStart)} → ${when(b.starts_at)}` : when(b.starts_at),
+    `tel. +${b.phone}`,
+    event === "new" ? answersText(b) : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+  await sendSms(to, text).catch((e) => console.error("Błąd SMS do gabinetu:", e));
+}
