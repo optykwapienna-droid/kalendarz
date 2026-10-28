@@ -1,4 +1,4 @@
-export default function Nav({ active }: { active: "wizyty" | "kalendarz" | "statystyki" | "niedokonczone" | "sms" }) {
+export default function Nav({ active }: { active: "wizyty" | "kalendarz" | "statystyki" | "niedokonczone" | "vouchery" | "sms" }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginTop: 20 }}>
       <nav style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -13,6 +13,9 @@ export default function Nav({ active }: { active: "wizyty" | "kalendarz" | "stat
         </a>
         <a className={`btn small${active === "niedokonczone" ? "" : " secondary"}`} href="/panel/niedokonczone">
           Niedokończone
+        </a>
+        <a className={`btn small${active === "vouchery" ? "" : " secondary"}`} href="/panel/vouchery">
+          Vouchery
         </a>
         <a className={`btn small${active === "sms" ? "" : " secondary"}`} href="/panel/sms">
           Szablony SMS
