@@ -34,4 +34,12 @@ describe("SMS", () => {
     ];
     for (const t of templates) expect(smsParts(renderSms(t, ctx))).toBe(1);
   });
+
+  it("SMS z emotikonami zachowuje polskie znaki i liczy części jak Unicode", () => {
+    const t = renderSms("✅ {imie}, {dzien}", ctx);
+    expect(t).toBe("✅ Łucja, wtorek, 3 listopada");
+    expect(smsParts("✅" + "a".repeat(69))).toBe(1);
+    expect(smsParts("📅" + "a".repeat(69))).toBe(2);
+    expect(smsParts("ą".repeat(160))).toBe(1);
+  });
 });

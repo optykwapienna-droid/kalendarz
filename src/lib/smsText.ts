@@ -1,7 +1,7 @@
 // Czysta logika SMS (bez bazy i sieci), żeby dało się ją testować.
 import { business } from "@/config";
 import { type Gender, honorifics } from "./gender";
-import { formatShortDate, formatTime } from "./time";
+import { formatShortDate, formatTime, formatWeekdayDate } from "./time";
 
 export const SMS_KINDS = {
   confirmation: "Potwierdzenie rezerwacji",
@@ -18,10 +18,11 @@ export const PLACEHOLDERS: Record<string, string> = {
   "{pana}": "Pani / Pana, np. „zapraszamy {pana}”",
   "{panu}": "Pani / Panu, np. „dziękujemy {panu}”",
   "{data}": "data wizyty, np. 28.10",
+  "{dzien}": "dzień tygodnia i data, np. wtorek, 3 listopada",
   "{godzina}": "godzina wizyty, np. 10:00",
   "{adres}": "adres salonu",
   "{telefon}": "telefon salonu",
-  "{link}": "link do szczegółów i odwołania wizyty",
+  "{link}": "link do zmiany lub odwołania wizyty",
   "{opinia}": "link do wystawienia opinii w Google",
 };
 
@@ -36,8 +37,20 @@ export function toGsm(s: string): string {
     .replace(/[–—]/g, "-");
 }
 
-/** Liczba części SMS (po zamianie na znaki bez ogonków). */
+// Znaki alfabetu GSM (7-bitowego). Każdy inny znak, np. emotikon, przełącza SMS na Unicode.
+const GSM = /^[@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&'()*+,\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà^{}\\[~\]|€]*$/;
+
+/** Czy tekst po usunięciu ogonków nadal wymaga Unicode (np. przez emotikony). */
+export function isUnicode(text: string): boolean {
+  return !GSM.test(toGsm(text));
+}
+
+/**
+ * Liczba części SMS. Zwykły SMS mieści 160 znaków (153 w dłuższej wiadomości),
+ * SMS z emotikonami 70 (67), a emotikon liczy się jak 2 znaki.
+ */
 export function smsParts(text: string): number {
+  if (isUnicode(text)) return text.length <= 70 ? 1 : Math.ceil(text.length / 67);
   const n = toGsm(text).length;
   return n <= 160 ? 1 : Math.ceil(n / 153);
 }
@@ -56,6 +69,7 @@ export function renderSms(body: string, c: SmsContext): string {
     "{imie}": c.firstName,
     "{nazwisko}": c.lastName,
     "{data}": formatShortDate(c.start, tz),
+    "{dzien}": formatWeekdayDate(c.start, tz),
     "{godzina}": formatTime(c.start, tz),
     "{adres}": business.street,
     "{telefon}": business.phone,
@@ -64,7 +78,9 @@ export function renderSms(body: string, c: SmsContext): string {
     ...honorifics(c.gender ?? null),
   };
   // Zachowujemy podział na linie z szablonu, porządkujemy tylko spacje i puste linie
-  return toGsm(body.replace(/\{[a-z]+\}/g, (m) => values[m] ?? m))
+  // SMS z emotikonami i tak idzie jako Unicode, więc zostawiamy w nim polskie znaki
+  const filled = body.replace(/\{[a-z]+\}/g, (m) => values[m] ?? m);
+  return (isUnicode(filled) ? filled : toGsm(filled))
     .replace(/\r/g, "")
     .split("\n")
     .map((l) => l.replace(/[ \t]+/g, " ").trim())

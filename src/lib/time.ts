@@ -60,6 +60,11 @@ export function formatDate(date: Date, tz: string): string {
   return new Intl.DateTimeFormat("pl-PL", { timeZone: tz, weekday: "long", day: "numeric", month: "long" }).format(date);
 }
 
+/** Np. „wtorek, 3 listopada”. */
+export function formatWeekdayDate(date: Date, tz: string): string {
+  return new Intl.DateTimeFormat("pl-PL", { timeZone: tz, weekday: "long", day: "numeric", month: "long" }).format(date);
+}
+
 export function formatShortDate(date: Date, tz: string): string {
   return new Intl.DateTimeFormat("pl-PL", { timeZone: tz, day: "2-digit", month: "2-digit" }).format(date);
 }
