@@ -88,3 +88,20 @@ alter table sms_log enable row level security;
 
 -- Dla istniejących baz
 alter table bookings add column if not exists gender text check (gender in ('f', 'm'));
+
+-- Niedokończone zapisy: dane z formularza, zanim pacjent kliknie „Rezerwuję wizytę”.
+-- Usuwane po udanej rezerwacji z tym numerem albo po 7 dniach (cron).
+create table if not exists booking_drafts (
+  id uuid primary key default gen_random_uuid(),
+  session_id text not null unique,
+  first_name text,
+  last_name text,
+  phone text not null,
+  service_id text,
+  starts_at timestamptz,
+  source text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists booking_drafts_phone_idx on booking_drafts (phone);
+alter table booking_drafts enable row level security;

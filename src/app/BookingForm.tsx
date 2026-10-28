@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Question, Service } from "@/config";
 import SlotPicker, { fmtLong, fmtTime } from "./SlotPicker";
@@ -24,6 +24,33 @@ export default function BookingForm({
   const [sending, setSending] = useState(false);
   const [reload, setReload] = useState(0);
   const service = services.find((s) => s.id === serviceId)!;
+  const sid = useRef<string>("");
+  const draftTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Zapisuje szkic (po wpisaniu telefonu), żeby gabinet mógł oddzwonić, gdy zapis zostanie przerwany
+  function saveDraft(form: HTMLFormElement) {
+    if (draftTimer.current) clearTimeout(draftTimer.current);
+    draftTimer.current = setTimeout(() => {
+      const f = new FormData(form);
+      if (String(f.get("phone") ?? "").replace(/\D/g, "").length < 9) return;
+      sid.current ||= crypto.randomUUID();
+      fetch("/api/draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        keepalive: true,
+        body: JSON.stringify({
+          sid: sid.current,
+          serviceId,
+          start,
+          firstName: f.get("firstName"),
+          lastName: f.get("lastName"),
+          phone: f.get("phone"),
+          source,
+          website: f.get("website"),
+        }),
+      }).catch(() => {});
+    }, 800);
+  }
 
   function setAnswer(id: string, value: string | string[]) {
     setAnswers((a) => ({ ...a, [id]: value }));
@@ -34,6 +61,7 @@ export default function BookingForm({
     if (!start) return;
     setError(null);
     setSending(true);
+    if (draftTimer.current) clearTimeout(draftTimer.current);
     const f = new FormData(e.currentTarget);
     const res = await fetch("/api/bookings", {
       method: "POST",
@@ -64,7 +92,7 @@ export default function BookingForm({
   }
 
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={submit} onChange={(e) => saveDraft(e.currentTarget)}>
       {services.length > 1 && (
         <section className="card">
           <h2>1. Usługa</h2>
@@ -126,7 +154,10 @@ export default function BookingForm({
 
           <label htmlFor="phone">Telefon komórkowy</label>
           <input id="phone" name="phone" type="tel" autoComplete="tel" inputMode="tel" required placeholder="np. 600 100 200" />
-          <span className="field-hint">Wyślemy SMS z potwierdzeniem, a dzień przed wizytą przypomnienie.</span>
+          <span className="field-hint">
+            Wyślemy SMS z potwierdzeniem, a dzień przed wizytą przypomnienie. Jeśli nie dokończysz zapisu, możemy
+            oddzwonić, żeby pomóc wybrać termin (dane usuwamy po 7 dniach).
+          </span>
 
           <div className="hp" aria-hidden="true">
             <label htmlFor="website">Strona WWW</label>

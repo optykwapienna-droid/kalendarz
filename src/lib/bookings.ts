@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { booking, business, questions, services } from "@/config";
 import { db, type BlockRow, type BookingRow, type SmsLogRow } from "./db";
+import { dropDraftsFor } from "./drafts";
 import { createEvent, deleteEvent, googleBusy, listAppEvents, moveEvent } from "./google";
 import { fakeTaken } from "./fakeTaken";
 import { slotsForDay, type Busy } from "./slots";
@@ -126,6 +127,7 @@ export async function createBooking(input: Validated, opts: { fromPanel?: boolea
     throw error;
   }
   const row = data as BookingRow;
+  await dropDraftsFor(row.phone);
 
   try {
     const eventId = await createEvent({
