@@ -21,6 +21,7 @@ const SOURCE_LABELS: Record<string, string> = {
   voucher: "Voucher -20%",
   voucher20: "Voucher -20%",
   voucher50: "Voucher -50%",
+  zaproszenie: "Link z panelu",
 };
 
 /** Skąd przyszła rezerwacja: z linku ?zrodlo=… albo „Strona” (wejście bez oznaczenia). */

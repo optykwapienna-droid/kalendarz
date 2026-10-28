@@ -36,17 +36,31 @@ export function voucherText(voucherId: VoucherId, firstName: string): string {
   });
 }
 
-/** Zapisuje zgodę i wysyła voucher. Rzuca błąd, gdy SMS nie wyszedł (zgoda zostaje zapisana). */
-export async function sendVoucher(phone: string, firstName: string, voucherId: VoucherId): Promise<void> {
-  const now = new Date().toISOString();
+/** Link otwierający WhatsApp z gotową wiadomością do danego numeru (48XXXXXXXXX). */
+export function whatsappUrl(phone: string, text: string): string {
+  return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+}
+
+/** Zapisuje zgodę klienta na oferty i informację o wysłanym voucherze. */
+export async function saveConsent(phone: string, firstName: string, voucherId: VoucherId): Promise<void> {
   const { error } = await db()
     .from("marketing_consents")
     .upsert(
-      { phone, first_name: firstName || null, last_voucher: voucherId, last_sent_at: now },
+      { phone, first_name: firstName || null, last_voucher: voucherId, last_sent_at: new Date().toISOString() },
       { onConflict: "phone", ignoreDuplicates: false },
     );
   if (error) throw error;
+}
+
+/** Zapisuje zgodę i wysyła voucher SMS-em. Rzuca błąd, gdy SMS nie wyszedł (zgoda zostaje zapisana). */
+export async function sendVoucher(phone: string, firstName: string, voucherId: VoucherId): Promise<void> {
+  await saveConsent(phone, firstName, voucherId);
   const text = voucherText(voucherId, firstName);
+  await sendLoggedSms(phone, text);
+}
+
+/** SMS bez powiązanej wizyty, zapisany w historii SMS-ów. */
+export async function sendLoggedSms(phone: string, text: string): Promise<void> {
   let err: string | null = null;
   try {
     await sendSms(phone, text);
@@ -56,6 +70,21 @@ export async function sendVoucher(phone: string, firstName: string, voucherId: V
   await db().from("sms_log").insert({ booking_id: null, kind: "other", body: text, error: err });
   if (err) throw new Error(err);
 }
+
+/** Zaproszenie do zapisów: link do strony rezerwacji (źródło „zaproszenie” w Statystykach). */
+export const INVITE_SMS =
+  "Dzień dobry,\nzapraszamy na badanie wzroku w {salon} 👓\n\nWybierz dogodny termin online:\n📅 {link}\n\nDo zobaczenia!";
+
+export function inviteText(firstName: string): string {
+  return renderSms(INVITE_SMS, {
+    firstName,
+    lastName: "",
+    start: new Date(),
+    link: `${siteUrl()}/?zrodlo=zaproszenie`,
+    gender: firstName ? guessGender(firstName) : null,
+  });
+}
+
 
 export async function listConsents(): Promise<ConsentRow[]> {
   const { data, error } = await db().from("marketing_consents").select("*").order("last_sent_at", { ascending: false, nullsFirst: false });

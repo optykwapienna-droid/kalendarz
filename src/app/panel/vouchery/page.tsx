@@ -62,6 +62,14 @@ export default async function VouchersPage({
               </option>
             ))}
           </select>
+          <div className="channel">
+            <label className="check">
+              <input type="radio" name="channel" value="sms" defaultChecked /> <span>SMS (wyśle się od razu)</span>
+            </label>
+            <label className="check">
+              <input type="radio" name="channel" value="whatsapp" /> <span>WhatsApp (otworzy czat z gotową wiadomością)</span>
+            </label>
+          </div>
           <label className="check">
             <input type="checkbox" name="consent" required />
             <span>Klient zgodził się na SMS z ofertą</span>
