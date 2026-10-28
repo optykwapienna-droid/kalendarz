@@ -117,6 +117,9 @@ function Row({ b, templates, log, past }: { b: BookingRow; templates: TemplateRo
         <div className="actions">
           <SmsMenu b={b} templates={templates} />
           <GenderMenu b={b} />
+          <a className="btn secondary small" href={`/panel/vouchery?tel=${b.phone}&imie=${encodeURIComponent(b.first_name)}`}>
+            Wyślij voucher
+          </a>
           {b.status === "confirmed" && !past && <Action b={b} action="cancel" label="Odwołaj" danger />}
           {b.status === "confirmed" && past && <Action b={b} action="no_show" label="Nie przyszedł" />}
           {b.status === "no_show" && <Action b={b} action="showed" label="Jednak był" />}

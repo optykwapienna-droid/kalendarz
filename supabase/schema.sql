@@ -105,3 +105,13 @@ create table if not exists booking_drafts (
 );
 create index if not exists booking_drafts_phone_idx on booking_drafts (phone);
 alter table booking_drafts enable row level security;
+
+-- Zgody na SMS-y z ofertami (vouchery dla klientów, którzy kupili okulary)
+create table if not exists marketing_consents (
+  phone text primary key,
+  first_name text,
+  given_at timestamptz not null default now(),
+  last_voucher text,
+  last_sent_at timestamptz
+);
+alter table marketing_consents enable row level security;
