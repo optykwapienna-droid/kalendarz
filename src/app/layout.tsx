@@ -1,40 +1,28 @@
 import type { Metadata, Viewport } from "next";
 import { business, services } from "@/config";
+import { businessJsonLd } from "@/lib/seo";
 import "./globals.css";
 
 const siteUrl = process.env.SITE_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: `Badanie wzroku Wrocław – zapisy online | ${business.name}`,
-  description: `Umów badanie wzroku i dobór okularów u optometrysty. ${business.name}, ${business.street}, ${business.city}. Wybierz termin online w minutę.`,
+  title: `Optyk Wrocław – badanie wzroku u optometrysty, zapisy online | ${business.name}`,
+  description: `Badanie wzroku i dobór okularów u optometrysty we Wrocławiu, ${business.street}. ${services[0].price ? `Badanie ${services[0].price}${services[0].priceNote ? ` (${services[0].priceNote})` : ""}. ` : ""}Wybierz termin online w minutę, potwierdzenie SMS.`,
+  keywords: ["optyk Wrocław", "badanie wzroku Wrocław", "optometrysta Wrocław", "okulary Wrocław", "dobór okularów", "okulary progresywne", "Optyk Wapienna"],
   alternates: { canonical: "/" },
   openGraph: {
     title: `Umów badanie wzroku – ${business.name}`,
     description: `${services[0].name}. ${business.street}, ${business.city}.`,
     locale: "pl_PL",
+    siteName: business.name,
     type: "website",
   },
 };
 
 export const viewport: Viewport = { themeColor: "#0f5c6e" };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Optician",
-  name: business.name,
-  url: siteUrl,
-  ...(business.phone ? { telephone: business.phone } : {}),
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: business.street.replace(/^ul\.\s*/, ""),
-    addressLocality: business.city,
-    ...(business.postalCode ? { postalCode: business.postalCode } : {}),
-    addressCountry: "PL",
-  },
-  employee: { "@type": "Person", name: "Ireneusz Galant", jobTitle: "Optometrysta" },
-  potentialAction: { "@type": "ReserveAction", target: siteUrl },
-};
+const jsonLd = businessJsonLd(siteUrl.replace(/\/$/, ""));
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

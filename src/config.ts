@@ -30,6 +30,13 @@ export const business = {
   googleReviewUrl: "https://g.page/r/CcMK2j77FxMfEBM/review",
   googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Optyk+Wapienna+Wapienna+20+Wroc%C5%82aw",
   timezone: "Europe/Warsaw",
+  // Godziny otwarcia gabinetu dla Google (dni: 1 = poniedziałek … 6 = sobota). Powinny
+  // zgadzać się z godzinami w Profilu Firmy w Google.
+  shopHours: [
+    { days: [1, 2, 3], from: "10:30", to: "18:00" },
+    { days: [5], from: "10:30", to: "17:00" },
+    { days: [6], from: "11:00", to: "14:00" },
+  ],
 };
 
 export const services: Service[] = [
@@ -125,4 +132,32 @@ export const visitTips = [
   "Zabierz obecne okulary (również te do czytania lub przeciwsłoneczne korekcyjne).",
   "Jeśli masz ostatnią receptę lub wynik badania, weź go ze sobą.",
   "Jeśli nosisz soczewki kontaktowe, zabierz informację o ich parametrach (np. opakowanie).",
+];
+
+// Najczęstsze pytania: widoczne na stronie zapisów i podawane Google (mogą pojawić się w wynikach wyszukiwania)
+export const faq: { q: string; a: string }[] = [
+  {
+    q: "Ile kosztuje badanie wzroku?",
+    a: "Badanie wzroku kosztuje 200 zł. Przy zakupie kompletnej pary okularów w naszym salonie płacisz za badanie tylko 1 zł.",
+  },
+  {
+    q: "Ile trwa badanie wzroku?",
+    a: "Badanie wraz z doborem okularów trwa około godziny.",
+  },
+  {
+    q: "Kto wykonuje badanie?",
+    a: "Badanie wykonuje optometrysta Ireneusz Galant. Obejmuje komputerowe i subiektywne badanie ostrości wzroku oraz dobór korekcji okularowej.",
+  },
+  {
+    q: "Czy potrzebne jest skierowanie?",
+    a: "Nie. Wystarczy wybrać termin online i podać imię, nazwisko oraz numer telefonu.",
+  },
+  {
+    q: "Mam już receptę. Czy mogę przyjść tylko wybrać oprawki?",
+    a: "Tak. Przy zapisie wybierz cel wizyty „Mam receptę, tylko wybór oprawki” i zabierz receptę ze sobą.",
+  },
+  {
+    q: "Jak zmienić lub odwołać wizytę?",
+    a: "W SMS-ie z potwierdzeniem jest link, pod którym w każdej chwili zmienisz termin lub odwołasz wizytę.",
+  },
 ];
