@@ -36,9 +36,12 @@ export function voucherText(voucherId: VoucherId, firstName: string): string {
   });
 }
 
-/** Link otwierający WhatsApp z gotową wiadomością do danego numeru (48XXXXXXXXX). */
+/**
+ * Link otwierający WhatsApp z gotową wiadomością do danego numeru (48XXXXXXXXX).
+ * Bez skrótu wa.me: jego przekierowanie psuje emotikony (przychodzą jako „�”).
+ */
 export function whatsappUrl(phone: string, text: string): string {
-  return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+  return `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}`;
 }
 
 /** Zapisuje zgodę klienta na oferty i informację o wysłanym voucherze. */
