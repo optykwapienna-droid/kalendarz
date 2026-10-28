@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createBooking } from "@/lib/bookings";
-import { sendBookingSms } from "@/lib/sms";
+import { notifyAdmin, sendBookingSms } from "@/lib/sms";
 import { validateBooking } from "@/lib/validate";
 
 export async function POST(req: NextRequest) {
@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
 
   // Rezerwacja jest już zapisana, więc błąd wysyłki SMS tylko logujemy (widać go w panelu)
   await sendBookingSms(result.booking, "confirmation").catch((e) => console.error("Błąd SMS:", e));
+  await notifyAdmin("new", result.booking);
 
   return NextResponse.json({ id: result.booking.id, start: result.booking.starts_at, token: result.booking.cancel_token });
 }

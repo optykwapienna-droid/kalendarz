@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { findByToken, rescheduleBooking } from "@/lib/bookings";
-import { sendBookingSms } from "@/lib/sms";
+import { notifyAdmin, sendBookingSms } from "@/lib/sms";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -16,5 +16,6 @@ export async function POST(req: NextRequest) {
 
   // Nowy termin jest zapisany, błąd SMS tylko logujemy (widać go w panelu)
   await sendBookingSms(result.booking, "confirmation").catch((e) => console.error("Błąd SMS:", e));
+  await notifyAdmin("moved", result.booking, b.starts_at);
   return NextResponse.json({ ok: true });
 }
