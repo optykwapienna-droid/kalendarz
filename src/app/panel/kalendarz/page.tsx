@@ -7,6 +7,7 @@ import { fullName, listBlocks, listBookings, serviceName } from "@/lib/bookings"
 import { isHoliday } from "@/lib/holidays";
 import { addDays, formatDate, formatTime, isDay, localDay, localToUtc, weekday } from "@/lib/time";
 import Nav from "../Nav";
+import VisitActions from "./VisitActions";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Kalendarz", robots: { index: false } };
@@ -47,7 +48,7 @@ function blockedOn(day: string, blocks: BlockRow[]): BlockRow[] {
 export default async function CalendarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ m?: string; d?: string }>;
+  searchParams: Promise<{ m?: string; d?: string; komunikat?: string }>;
 }) {
   if (!(await isAdmin())) redirect("/panel/login");
   const now = new Date();
@@ -70,6 +71,7 @@ export default async function CalendarPage({
   return (
     <>
       <Nav active="kalendarz" />
+      {sp.komunikat && <div className="alert ok">{sp.komunikat}</div>}
       <section className="card">
         <div className="cal-head">
           <a className="btn secondary small" href={link(shiftMonth(month, -1))} aria-label="Poprzedni miesiąc">
@@ -154,6 +156,9 @@ export default async function CalendarPage({
                     {serviceName(b.service_id)}
                     {b.status === "no_show" ? " · nie przyszedł" : ""}
                   </span>
+                  {b.status === "confirmed" && new Date(b.starts_at) > now && (
+                    <VisitActions b={b} back={link(month, selected)} day={selected} />
+                  )}
                 </span>
               </div>
             ))

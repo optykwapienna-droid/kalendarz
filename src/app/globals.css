@@ -117,6 +117,11 @@ code { background: var(--brand-soft); padding: 1px 5px; border-radius: 4px; font
 .cal-legend.closed { background: #eef1f2; }
 .cal-legend.blocked { background: repeating-linear-gradient(135deg, #fff, #fff 3px, #fbe9e7 3px, #fbe9e7 6px); }
 .cal-visit { display: flex; gap: 14px; padding: 10px 0; border-top: 1px solid var(--line); }
+.cal-visit > span { flex: 1; min-width: 0; }
+.visit-actions { margin-top: 6px; }
+.visit-actions summary { cursor: pointer; color: var(--brand); font-size: 0.9rem; }
+.visit-actions form { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-top: 10px; }
+.visit-actions h3 { font-size: 0.95rem; margin: 0 0 4px; }
 @media (min-width: 640px) {
   .cal-day { min-height: 92px; }
   .cal-count { display: none; }

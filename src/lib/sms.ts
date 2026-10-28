@@ -1,6 +1,7 @@
 import { db, type BookingRow, type SmsKind, type TemplateRow } from "./db";
 import { sendSms } from "./smsGateway";
 import { genderOf } from "./gender";
+import { SMS_DEFAULTS } from "./smsDefaults";
 import { renderSms } from "./smsText";
 
 export function siteUrl(): string {
@@ -43,6 +44,23 @@ const sentColumn: Partial<Record<SmsKind, string>> = {
 export async function sendBookingSms(b: BookingRow, kind: SmsKind, templateId?: string): Promise<boolean> {
   const tpl = templateId ? await templateById(templateId) : await defaultTemplate(kind);
   if (!tpl) return false;
+  await sendTemplate(b, tpl);
+  return true;
+}
+
+/**
+ * Wysyła SMS z szablonu o danej nazwie (np. „Odwolanie wizyty przez gabinet”). Gdy w bazie
+ * nie ma takiego szablonu, bierze treść z wzorów domyślnych.
+ */
+export async function sendNamedSms(b: BookingRow, name: string): Promise<void> {
+  const { data, error } = await db().from("sms_templates").select("*").eq("name", name).limit(1).maybeSingle();
+  if (error) throw error;
+  const tpl = (data as TemplateRow | null) ?? SMS_DEFAULTS.find((t) => t.name === name);
+  if (!tpl) throw new Error(`Brak szablonu SMS „${name}”`);
+  await sendTemplate(b, tpl);
+}
+
+async function sendTemplate(b: BookingRow, tpl: { kind: SmsKind; body: string }): Promise<void> {
   const text = renderSms(tpl.body, {
     firstName: b.first_name,
     lastName: b.last_name,
@@ -60,6 +78,5 @@ export async function sendBookingSms(b: BookingRow, kind: SmsKind, templateId?: 
   if (error) throw new Error(error);
   const col = sentColumn[tpl.kind];
   if (col) await db().from("bookings").update({ [col]: new Date().toISOString() }).eq("id", b.id);
-  return true;
 }
 

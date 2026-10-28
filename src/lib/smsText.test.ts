@@ -42,4 +42,8 @@ describe("SMS", () => {
     expect(smsParts("📅" + "a".repeat(69))).toBe(2);
     expect(smsParts("ą".repeat(160))).toBe(1);
   });
+
+  it("{zmiana} prowadzi prosto do wyboru nowego terminu", () => {
+    expect(renderSms("{zmiana}", ctx)).toBe(`${ctx.link}/zmien`);
+  });
 });

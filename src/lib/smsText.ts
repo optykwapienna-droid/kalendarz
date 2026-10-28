@@ -24,6 +24,7 @@ export const PLACEHOLDERS: Record<string, string> = {
   "{adres}": "adres salonu",
   "{telefon}": "telefon salonu",
   "{link}": "link do zmiany lub odwołania wizyty",
+  "{zmiana}": "link prosto do wyboru nowego terminu",
   "{opinia}": "link do wystawienia opinii w Google",
 };
 
@@ -76,6 +77,7 @@ export function renderSms(body: string, c: SmsContext): string {
     "{adres}": business.street,
     "{telefon}": business.phone,
     "{link}": c.link,
+    "{zmiana}": `${c.link}/zmien`,
     "{opinia}": business.googleReviewUrl,
     ...honorifics(c.gender ?? null),
   };

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { PANEL_TIMES } from "@/lib/panelTimes";
 
 /** Dzień i godzina wizyty w panelu; po wybraniu dnia lista godzin pomija te już zajęte. */
-export default function DayTimeFields({ defaultDay }: { defaultDay: string }) {
+export default function DayTimeFields({ defaultDay, idPrefix = "" }: { defaultDay: string; idPrefix?: string }) {
   const [day, setDay] = useState(defaultDay);
   const [time, setTime] = useState("");
   const [taken, setTaken] = useState<string[] | null>(null);
@@ -30,12 +30,12 @@ export default function DayTimeFields({ defaultDay }: { defaultDay: string }) {
   return (
     <div className="row">
       <div>
-        <label htmlFor="day">Dzień</label>
-        <input id="day" name="day" type="date" required value={day} onChange={(e) => setDay(e.target.value)} />
+        <label htmlFor={`${idPrefix}day`}>Dzień</label>
+        <input id={`${idPrefix}day`} name="day" type="date" required value={day} onChange={(e) => setDay(e.target.value)} />
       </div>
       <div>
-        <label htmlFor="time">Godzina</label>
-        <select id="time" name="time" required value={time} onChange={(e) => setTime(e.target.value)}>
+        <label htmlFor={`${idPrefix}time`}>Godzina</label>
+        <select id={`${idPrefix}time`} name="time" required value={time} onChange={(e) => setTime(e.target.value)}>
           <option value="" disabled>
             {taken === null ? "Sprawdzam wolne godziny…" : free.length ? "Wybierz…" : "Brak wolnych godzin"}
           </option>

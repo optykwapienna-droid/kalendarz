@@ -41,4 +41,14 @@ export const SMS_DEFAULTS: { kind: SmsKind; name: string; body: string; isDefaul
     name: "Odwolanie wizyty przez gabinet",
     body: "Dzień dobry,\nz przykrością musimy odwołać {pana} wizytę {dzien}, godz. {godzina}. Przepraszamy i prosimy o kontakt w sprawie nowego terminu:\n📞 {telefon}\n\n{salon}",
   },
+  {
+    kind: "other",
+    name: "Prosba o zmiane terminu",
+    body: "Dzień dobry,\nniestety musimy zmienić termin {pana} wizyty ({dzien}, godz. {godzina}). Przepraszamy! Prosimy wybrać nowy, dogodny termin:\n🔄 {zmiana}\n\nW razie pytań: 📞 {telefon}\n{salon}",
+  },
+  {
+    kind: "other",
+    name: "Nowy termin wizyty",
+    body: "Dzień dobry,\nzgodnie z ustaleniami {pana} wizyta została przeniesiona ✅\n\n📅 {dzien}, godz. {godzina}\n📍 {salon}, {adres}\n\n🔄 Zmiana rezerwacji:\n{link}",
+  },
 ];

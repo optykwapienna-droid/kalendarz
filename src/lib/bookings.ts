@@ -191,6 +191,35 @@ export async function rescheduleBooking(b: BookingRow, start: Date, now = new Da
   return { ok: true, booking: data as BookingRow };
 }
 
+/**
+ * Gabinet przenosi wizytę na inną godzinę (bez limitu czasu jak u pacjenta, z panelu każda
+ * godzina, byle nie nachodziła na inne zajęte terminy). Pomija przedział samej przenoszonej wizyty.
+ */
+export async function adminMoveBooking(b: BookingRow, start: Date): Promise<RescheduleResult> {
+  if (b.status !== "confirmed") return { ok: false, status: 409, error: "Tej wizyty nie można już przenieść." };
+  const service = services.find((s) => s.id === b.service_id) ?? services[0];
+  const end = new Date(start.getTime() + service.durationMin * 60000);
+  const ownStart = new Date(b.starts_at).getTime();
+  const ownEnd = new Date(b.ends_at).getTime();
+  const busy = (await busyBetween(start, end)).filter((x) => !(x.start.getTime() === ownStart && x.end.getTime() === ownEnd));
+  if (busy.some((x) => x.start < end && x.end > start)) {
+    return { ok: false, status: 409, error: "Ta godzina jest już zajęta (wizyta, blokada lub wydarzenie w Kalendarzu Google). Wybierz inną." };
+  }
+  const { data, error } = await db()
+    .from("bookings")
+    .update({ starts_at: start.toISOString(), ends_at: end.toISOString(), reminder_sent_at: null, thanks_sent_at: null })
+    .eq("id", b.id)
+    .eq("status", "confirmed")
+    .select()
+    .single();
+  if (error) {
+    if (error.code === "23P01") return { ok: false, status: 409, error: TAKEN };
+    throw error;
+  }
+  await moveEvent(b.google_event_id, start, end).catch((e) => console.error("Nie udało się przesunąć wydarzenia Google:", e));
+  return { ok: true, booking: data as BookingRow };
+}
+
 export async function setStatus(b: BookingRow, status: BookingRow["status"]): Promise<void> {
   const { error } = await db().from("bookings").update({ status }).eq("id", b.id);
   if (error) throw error;
