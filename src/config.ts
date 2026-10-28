@@ -19,7 +19,7 @@ export type Question =
   | { id: string; type: "text"; label: string; placeholder?: string; required?: boolean };
 
 export const business = {
-  name: "Optyk Wapienna",
+  name: "Optyk Galant",
   person: "Ireneusz Galant, optometrysta",
   street: "ul. Wapienna 20",
   postalCode: "", // TODO: uzupełnić kod pocztowy
@@ -28,7 +28,7 @@ export const business = {
   email: "", // TODO: uzupełnić adres e-mail salonu
   // Link „Napisz opinię” z Profilu Firmy w Google (Udostępnij profil -> Poproś o opinie)
   googleReviewUrl: "https://g.page/r/CcMK2j77FxMfEBM/review",
-  googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Optyk+Wapienna+Wapienna+20+Wroc%C5%82aw",
+  googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Optyk+Galant+Wapienna+20+Wroc%C5%82aw",
   timezone: "Europe/Warsaw",
   // Godziny otwarcia gabinetu dla Google (dni: 1 = poniedziałek … 6 = sobota). Powinny
   // zgadzać się z godzinami w Profilu Firmy w Google.

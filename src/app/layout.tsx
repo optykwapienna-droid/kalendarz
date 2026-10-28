@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: `Optyk Wrocław – badanie wzroku u optometrysty, zapisy online | ${business.name}`,
   description: `Badanie wzroku i dobór okularów u optometrysty we Wrocławiu, ${business.street}. ${services[0].price ? `Badanie ${services[0].price}${services[0].priceNote ? ` (${services[0].priceNote})` : ""}. ` : ""}Wybierz termin online w minutę, potwierdzenie SMS.`,
-  keywords: ["optyk Wrocław", "badanie wzroku Wrocław", "optometrysta Wrocław", "okulary Wrocław", "dobór okularów", "okulary progresywne", "Optyk Wapienna"],
+  keywords: ["optyk Wrocław", "badanie wzroku Wrocław", "optometrysta Wrocław", "okulary Wrocław", "dobór okularów", "okulary progresywne", "Optyk Galant", "optyk Wapienna"],
   alternates: { canonical: "/" },
   openGraph: {
     title: `Umów badanie wzroku – ${business.name}`,

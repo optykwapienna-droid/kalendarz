@@ -149,7 +149,7 @@ export default async function SmsTemplates() {
             </div>
           </div>
           <label htmlFor="body">Treść</label>
-          <textarea id="body" name="body" required maxLength={640} placeholder="Optyk Wapienna: ..." />
+          <textarea id="body" name="body" required maxLength={640} placeholder="Optyk Galant: ..." />
           <button className="btn" style={{ marginTop: 12 }}>
             Dodaj szablon
           </button>
