@@ -22,7 +22,7 @@ export const business = {
   name: "Optyk Galant",
   person: "Ireneusz Galant, optometrysta",
   street: "ul. Wapienna 20",
-  postalCode: "", // TODO: uzupełnić kod pocztowy
+  postalCode: "50-518",
   city: "Wrocław",
   phone: "502 144 394",
   // Numer, na który przychodzi SMS o każdej nowej, przełożonej i odwołanej przez pacjenta wizycie.
