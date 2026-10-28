@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { business } from "@/config";
 import { isAdmin } from "@/lib/auth";
 import type { SmsKind, TemplateRow } from "@/lib/db";
 import { listTemplates } from "@/lib/sms";
+import { SMS_DEFAULTS } from "@/lib/smsDefaults";
 import { PLACEHOLDERS, SMS_KINDS, renderSms, smsParts } from "@/lib/smsText";
 import Nav from "../Nav";
 
@@ -75,6 +77,23 @@ export default async function SmsTemplates() {
   return (
     <>
       <Nav active="sms" />
+
+      {SMS_DEFAULTS.some((d) => !templates.some((t) => t.name === d.name && t.body === d.body)) && (
+        <section className="card">
+          <h2>Nowe wzory SMS-ów</h2>
+          <p className="small">
+            Eleganckie wersje z emotikonami, zwrotem Pan/Pani i nazwą {business.name}. Zastąpią treść szablonów o tych
+            samych nazwach, a jako podziękowanie po wizycie będzie wysyłana prośba o opinię w Google.
+          </p>
+          <div className="summary small" style={{ whiteSpace: "pre-line" }}>
+            {renderSms(SMS_DEFAULTS[0].body, sample)}
+          </div>
+          <form method="post" action="/api/admin/templates" style={{ marginTop: 12 }}>
+            <input type="hidden" name="action" value="load_defaults" />
+            <button className="btn">Wczytaj nowe wzory</button>
+          </form>
+        </section>
+      )}
 
       <section className="card">
         <h2>Wysyłane automatycznie</h2>
