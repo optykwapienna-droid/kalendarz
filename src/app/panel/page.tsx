@@ -9,6 +9,7 @@ import { googleEnabled } from "@/lib/google";
 import { listTemplates, siteUrl } from "@/lib/sms";
 import { SMS_KINDS } from "@/lib/smsText";
 import { formatDate, formatTime, isDay, localDay } from "@/lib/time";
+import { inviteText } from "@/lib/vouchers";
 import DayTimeFields from "./DayTimeFields";
 import Nav from "./Nav";
 
@@ -153,6 +154,35 @@ export default async function Panel({ searchParams }: { searchParams: Promise<{ 
       <Nav active="wizyty" />
       {komunikat && <div className="alert ok">{komunikat}</div>}
       {syncError && <div className="alert error">{syncError}</div>}
+
+      <section className="card">
+        <h2>Wyślij link do zapisów</h2>
+        <form method="post" action="/api/admin/invite">
+          <div className="row">
+            <div>
+              <label htmlFor="i-name">Imię (opcjonalnie)</label>
+              <input id="i-name" name="firstName" type="text" maxLength={60} />
+            </div>
+            <div>
+              <label htmlFor="i-phone">Telefon</label>
+              <input id="i-phone" name="phone" type="tel" inputMode="tel" required />
+            </div>
+          </div>
+          <div className="channel">
+            <label className="check">
+              <input type="radio" name="channel" value="sms" defaultChecked /> <span>SMS (wyśle się od razu)</span>
+            </label>
+            <label className="check">
+              <input type="radio" name="channel" value="whatsapp" /> <span>WhatsApp (otworzy czat z gotową wiadomością)</span>
+            </label>
+          </div>
+          <button className="btn">Wyślij link</button>
+        </form>
+        <details className="small muted" style={{ marginTop: 8 }}>
+          <summary>Treść wiadomości</summary>
+          <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{inviteText("Anna")}</pre>
+        </details>
+      </section>
 
       <section className="card">
         <h2>Dodaj wizytę</h2>

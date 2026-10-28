@@ -1,13 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isAdmin } from "@/lib/auth";
 import { normalizePhone } from "@/lib/validate";
-import { sendVoucher, VOUCHERS, withdrawConsent, type VoucherId } from "@/lib/vouchers";
+import { saveConsent, sendVoucher, voucherText, VOUCHERS, whatsappUrl, withdrawConsent, type VoucherId } from "@/lib/vouchers";
 
 function back(req: NextRequest, msg: string) {
   return NextResponse.redirect(new URL(`/panel/vouchery?komunikat=${encodeURIComponent(msg)}`, req.url), 303);
 }
 
-// Wysyłka vouchera SMS-em (tylko za zgodą klienta) i wycofanie zgody.
+// Wysyłka vouchera SMS-em albo przez WhatsApp (tylko za zgodą klienta) i wycofanie zgody.
 export async function POST(req: NextRequest) {
   if (!(await isAdmin())) return NextResponse.redirect(new URL("/panel/login", req.url), 303);
   const f = await req.formData();
@@ -23,6 +23,10 @@ export async function POST(req: NextRequest) {
   if (!VOUCHERS.some((v) => v.id === voucherId)) return back(req, "Wybierz voucher.");
   if (f.get("consent") !== "on") return back(req, "Voucher można wysłać tylko za zgodą klienta.");
   const firstName = String(f.get("firstName") ?? "").trim().slice(0, 60);
+  if (f.get("channel") === "whatsapp") {
+    await saveConsent(phone, firstName, voucherId);
+    return NextResponse.redirect(whatsappUrl(phone, voucherText(voucherId, firstName)), 303);
+  }
   try {
     await sendVoucher(phone, firstName, voucherId);
   } catch (e) {
