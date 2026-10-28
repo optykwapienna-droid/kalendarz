@@ -1,4 +1,4 @@
-import Voucher, { voucherMetadata, voucherViewport, type VoucherConfig } from "../voucher/Voucher";
+import Voucher, { voucherMetadata, voucherViewport, type VoucherConfig } from "../_voucher/Voucher";
 
 const v: VoucherConfig = {
   path: "/voucher-50",

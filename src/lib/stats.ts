@@ -19,6 +19,7 @@ const SOURCE_LABELS: Record<string, string> = {
   znanylekarz: "ZnanyLekarz",
   telefon: "Telefon",
   voucher: "Voucher -20%",
+  voucher20: "Voucher -20%",
   voucher50: "Voucher -50%",
 };
 
