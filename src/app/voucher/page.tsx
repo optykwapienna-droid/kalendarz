@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `Voucher -20% na soczewki okularowe – ${business.name}`,
     description: `Kompletna para okularów od 200 zł. ${business.street}, ${business.city}.`,
+    images: [{ url: "/voucher.png", width: 766, height: 1032, alt: "Voucher -20% na soczewki okularowe" }],
   },
 };
 
@@ -30,7 +31,10 @@ export default function VoucherPage() {
       <FullscreenButton />
       <div className="voucher">
         {hasImage ? (
-          <img className="voucher-img" src={IMAGE} alt="Voucher -20% na soczewki okularowe. Kompletna para okularów od 200 zł." />
+          <>
+            <img className="voucher-img" src={IMAGE} alt="Voucher -20% na soczewki okularowe. Optyk Galant, ul. Wapienna 20, Wrocław." />
+            <p className="voucher-promo">Kompletna para okularów od 200 zł</p>
+          </>
         ) : (
           <>
             <p className="voucher-label">Voucher</p>

@@ -155,10 +155,11 @@ body:has(.voucher-full) .site-footer { display: none; }
 body:has(.voucher-full) main.wrap { max-width: none; padding: 0; }
 .voucher-full { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; position: relative;
   padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
-  background: linear-gradient(160deg, #ffffff 0%, #eef3f7 55%, #dfe8ef 100%); }
+  background: linear-gradient(180deg, #eef2f8 0%, #dae5f4 100%); }
 .voucher { width: 100%; max-width: 440px; text-align: center; }
 .voucher p { margin: 0; }
-.voucher-img { display: block; width: 100%; height: auto; max-height: 62dvh; object-fit: contain; margin: 0 auto; border-radius: 16px; }
+.voucher-img { display: block; width: 100%; height: auto; max-height: 64dvh; object-fit: contain; margin: 0 auto; border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(29, 43, 79, 0.15); }
 .voucher-label { font-family: Georgia, "Times New Roman", serif; font-size: 2.4rem; letter-spacing: 0.08em; color: #1d2b4f; text-transform: uppercase; }
 .voucher-value { font-family: Georgia, "Times New Roman", serif; font-size: 5rem; line-height: 1.1; color: #e4413b; font-weight: 700; margin-top: 8px !important; }
 .voucher-what { text-transform: uppercase; letter-spacing: 0.06em; color: #1d2b4f; }
