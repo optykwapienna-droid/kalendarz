@@ -33,9 +33,9 @@ export const business = {
   // Godziny otwarcia gabinetu dla Google (dni: 1 = poniedziałek … 6 = sobota). Powinny
   // zgadzać się z godzinami w Profilu Firmy w Google.
   shopHours: [
-    { days: [1, 2, 3], from: "10:30", to: "18:00" },
-    { days: [5], from: "10:30", to: "17:00" },
-    { days: [6], from: "11:00", to: "14:00" },
+    { days: [1, 2, 3], from: "10:00", to: "18:00" },
+    { days: [5], from: "10:00", to: "16:30" },
+    { days: [6], from: "10:00", to: "14:00" },
   ],
 };
 
