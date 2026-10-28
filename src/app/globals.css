@@ -139,3 +139,7 @@ code { background: var(--brand-soft); padding: 1px 5px; border-radius: 4px; font
   padding: 8px 12px;
   margin: 0 0 12px;
 }
+
+.faq { border-top: 1px solid var(--line); padding: 10px 0; }
+.faq summary { cursor: pointer; font-weight: 600; }
+.faq p { margin: 8px 0 0; }
