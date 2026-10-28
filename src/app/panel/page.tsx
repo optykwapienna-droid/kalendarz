@@ -12,6 +12,8 @@ import { formatDate, formatTime, isDay, localDay } from "@/lib/time";
 import { inviteText } from "@/lib/vouchers";
 import DayTimeFields from "./DayTimeFields";
 import Nav from "./Nav";
+import PushBar from "./PushBar";
+import { pushPublicKey } from "@/lib/push";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Panel gabinetu", robots: { index: false } };
@@ -152,6 +154,7 @@ export default async function Panel({ searchParams }: { searchParams: Promise<{ 
   return (
     <>
       <Nav active="wizyty" />
+      <PushBar publicKey={await pushPublicKey()} />
       {komunikat && <div className="alert ok">{komunikat}</div>}
       {syncError && <div className="alert error">{syncError}</div>}
 

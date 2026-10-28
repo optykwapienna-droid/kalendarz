@@ -1,3 +1,4 @@
+import { sendPush } from "./push";
 import { db, type BookingRow, type SmsKind, type TemplateRow } from "./db";
 import { sendSms } from "./smsGateway";
 import { genderOf } from "./gender";
@@ -87,10 +88,8 @@ async function sendTemplate(b: BookingRow, tpl: { kind: SmsKind; body: string })
 
 const ADMIN_EVENTS = { new: "Nowa wizyta", moved: "Zmiana terminu", cancelled: "Odwołana wizyta" } as const;
 
-/** SMS do gabinetu o zmianie w wizytach dokonanej przez pacjenta. Błąd tylko logujemy. */
+/** Push i SMS do gabinetu o zmianie w wizytach dokonanej przez pacjenta. Błąd tylko logujemy. */
 export async function notifyAdmin(event: keyof typeof ADMIN_EVENTS, b: BookingRow, oldStart?: string): Promise<void> {
-  const to = business.adminPhone && normalizePhone(business.adminPhone);
-  if (!to) return;
   const tz = business.timezone;
   const when = (iso: string) => `${formatWeekdayDate(new Date(iso), tz)}, ${formatTime(new Date(iso), tz)}`;
   const text = [
@@ -101,5 +100,9 @@ export async function notifyAdmin(event: keyof typeof ADMIN_EVENTS, b: BookingRo
   ]
     .filter(Boolean)
     .join("\n");
+  const [title, ...rest] = text.split("\n");
+  await sendPush(title, rest.slice(0, 2).join("\n"));
+  const to = business.adminPhone && normalizePhone(business.adminPhone);
+  if (!to) return;
   await sendSms(to, text).catch((e) => console.error("Błąd SMS do gabinetu:", e));
 }

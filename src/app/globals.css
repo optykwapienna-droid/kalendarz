@@ -175,3 +175,5 @@ body:has(.voucher-full) main.wrap { max-width: none; padding: 0; }
   border: 1px solid #c8d1d9; background: rgba(255, 255, 255, 0.85); color: #1d2b4f; font-size: 1.1rem; cursor: pointer; }
 
 .channel .check { margin: 6px 0; }
+
+.push-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;margin:0 0 12px;padding:10px 14px;border-radius:10px;background:#eaf3f5;font-size:14px}

@@ -115,3 +115,21 @@ create table if not exists marketing_consents (
   last_sent_at timestamptz
 );
 alter table marketing_consents enable row level security;
+
+-- Telefony gabinetu zapisane do powiadomień push o nowych wizytach.
+-- seen_at: kiedy panel był ostatnio otwarty na tym urządzeniu (licznik na ikonie liczy wizyty po tej chwili).
+create table if not exists push_subscriptions (
+  endpoint text primary key,
+  p256dh text not null,
+  auth text not null,
+  seen_at timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+alter table push_subscriptions enable row level security;
+
+-- Klucze VAPID do push, generowane przez aplikację przy pierwszym użyciu (tylko service role).
+create table if not exists app_keys (
+  name text primary key,
+  value text not null
+);
+alter table app_keys enable row level security;
