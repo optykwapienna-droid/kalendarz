@@ -148,3 +148,18 @@ code { background: var(--brand-soft); padding: 1px 5px; border-radius: 4px; font
 .faq { border-top: 1px solid var(--line); padding: 10px 0; }
 .faq summary { cursor: pointer; font-weight: 600; }
 .faq p { margin: 8px 0 0; }
+
+/* Voucher do wysyłania klientom (/voucher) */
+.voucher { max-width: 420px; margin: 24px auto; padding: 32px 24px; text-align: center; border-radius: 20px;
+  background: linear-gradient(160deg, #ffffff 0%, #eef3f7 60%, #dfe8ef 100%); box-shadow: 0 10px 30px rgba(15, 40, 60, 0.12); }
+.voucher p { margin: 0; }
+.voucher-label { font-family: Georgia, "Times New Roman", serif; font-size: 2.2rem; letter-spacing: 0.08em; color: #1d2b4f; text-transform: uppercase; }
+.voucher-value { font-family: Georgia, "Times New Roman", serif; font-size: 4.5rem; line-height: 1.1; color: #e4413b; font-weight: 700; margin-top: 8px !important; }
+.voucher-what { text-transform: uppercase; letter-spacing: 0.06em; color: #1d2b4f; }
+.voucher-promo { margin-top: 16px !important; color: #e4413b; font-weight: 700; font-style: italic; }
+.voucher-line { height: 1px; background: #c8b48a; margin: 18px 40px; }
+.voucher-name { font-size: 1.3rem; font-weight: 600; color: #1d2b4f; }
+.voucher-addr { color: var(--muted); margin-top: 4px !important; }
+.voucher-actions { display: grid; gap: 10px; margin-top: 22px; }
+.voucher-actions .btn { width: 100%; text-decoration: none; }
+.voucher-note { margin-top: 18px !important; font-size: 0.85rem; color: var(--muted); }
