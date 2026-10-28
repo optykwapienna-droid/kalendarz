@@ -25,6 +25,9 @@ export const business = {
   postalCode: "", // TODO: uzupełnić kod pocztowy
   city: "Wrocław",
   phone: "502 144 394",
+  // Numer, na który przychodzi SMS o każdej nowej, przełożonej i odwołanej przez pacjenta wizycie.
+  // Pusty = bez powiadomień.
+  adminPhone: "502 144 394",
   email: "", // TODO: uzupełnić adres e-mail salonu
   // Link „Napisz opinię” z Profilu Firmy w Google (Udostępnij profil -> Poproś o opinie)
   googleReviewUrl: "https://g.page/r/CcMK2j77FxMfEBM/review",
