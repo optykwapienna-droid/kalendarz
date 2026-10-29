@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { renderSms, smsParts, toGsm } from "./smsText";
 import { SMS_DEFAULTS } from "./smsDefaults";
+import { INVITE_SMS, VOUCHER_SMS } from "./vouchers";
 
 const ctx = {
   firstName: "Łucja",
@@ -50,11 +51,11 @@ describe("SMS", () => {
   });
 });
 
-describe("wzory SMS z linkiem", () => {
+describe("wzory SMS", () => {
   it("są krótkie i bez emotikonów", () => {
     const long = { ...ctx, start: new Date("2026-10-28T09:00:00Z"), link: "https://wizyta.ireneuszgalant.pl/o/cyQ4_ELFpSJ-3R5D" };
-    for (const t of SMS_DEFAULTS.filter((d) => d.body.includes("{link}"))) {
-      const text = renderSms(t.body, long);
+    for (const body of [...SMS_DEFAULTS.map((d) => d.body), VOUCHER_SMS, INVITE_SMS]) {
+      const text = renderSms(body, long);
       expect(text).not.toMatch(/\p{Extended_Pictographic}/u);
       expect(smsParts(text)).toBeLessThanOrEqual(3);
     }

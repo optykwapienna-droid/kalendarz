@@ -18,33 +18,33 @@ export const SMS_DEFAULTS: { kind: SmsKind; name: string; body: string; isDefaul
   {
     kind: "reminder",
     name: "Przypomnienie krotkie",
-    body: "Dzień dobry,\njutro o godz. {godzina} zapraszamy na badanie wzroku.\n📍 {salon}, {adres}\nDo zobaczenia!",
+    body: "Dzień dobry, jutro o {godzina} zapraszamy na badanie wzroku, {salon}, {adres}. Do zobaczenia!",
   },
   {
     kind: "thanks",
     name: "Podziekowanie z prosba o opinie",
     isDefault: true,
-    body: "Dzień dobry,\ndziękujemy za wizytę w {salon} 🙏\n\nBędzie nam bardzo miło, jeśli {pan} zostawi opinię w Google ⭐\n{opinia}\n\nIreneusz Galant",
+    body: "Dzień dobry, dziękujemy za wizytę w {salon}. Będzie nam miło, jeśli {pan} zostawi opinię w Google:\n{opinia}\nIreneusz Galant",
   },
   {
     kind: "thanks",
     name: "Podziekowanie",
-    body: "Dzień dobry,\ndziękujemy za wizytę w {salon}. W razie pytań o okulary jesteśmy do dyspozycji.\n\nPozdrawiamy serdecznie\nIreneusz Galant",
+    body: "Dzień dobry, dziękujemy za wizytę w {salon}. W razie pytań o okulary jesteśmy do dyspozycji.\nPozdrawiamy, Ireneusz Galant",
   },
   {
     kind: "other",
     name: "Okulary do odbioru",
-    body: "Dzień dobry,\n{pana} okulary są gotowe do odbioru 👓\n\n📍 {salon}, {adres}\nZapraszamy!",
+    body: "Dzień dobry, {pana} okulary są gotowe do odbioru w {salon}, {adres}. Zapraszamy!",
   },
   {
     kind: "other",
     name: "Odwolanie wizyty przez gabinet",
-    body: "Dzień dobry,\nz przykrością musimy odwołać {pana} wizytę {dzien}, godz. {godzina}. Przepraszamy i prosimy o kontakt w sprawie nowego terminu:\n📞 {telefon}\n\n{salon}",
+    body: "Dzień dobry, z przykrością musimy odwołać {pana} wizytę {data} o {godzina}. Przepraszamy i prosimy o kontakt w sprawie nowego terminu: tel. {telefon}.\n{salon}",
   },
   {
     kind: "other",
     name: "Prosba o zmiane terminu",
-    body: "Dzień dobry,\nniestety musimy zmienić termin {pana} wizyty ({dzien}, godz. {godzina}). Przepraszamy! Prosimy wybrać nowy, dogodny termin:\n🔄 {zmiana}\n\nW razie pytań: 📞 {telefon}\n{salon}",
+    body: "Dzień dobry, musimy zmienić termin {pana} wizyty {data} o {godzina}. Przepraszamy! Nowy termin:\n{zmiana}\nPytania: tel. {telefon}",
   },
   {
     kind: "other",
