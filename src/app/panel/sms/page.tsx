@@ -82,7 +82,7 @@ export default async function SmsTemplates() {
         <section className="card">
           <h2>Nowe wzory SMS-ów</h2>
           <p className="small">
-            Krótkie potwierdzenia i przypomnienia bez emotikonów (mieszczą się w 1 SMS) oraz wersje z nazwą {business.name}. Zastąpią treść szablonów o tych
+            Krótkie potwierdzenia i przypomnienia bez emotikonów oraz wersje z nazwą {business.name}. Zastąpią treść szablonów o tych
             samych nazwach, a jako podziękowanie po wizycie będzie wysyłana prośba o opinię w Google.
           </p>
           <div className="summary small" style={{ whiteSpace: "pre-line" }}>
@@ -138,7 +138,7 @@ export default async function SmsTemplates() {
               <code>{k}</code> ({v})
             </span>
           ))}
-          . Polskie znaki zamieniamy na zwykłe litery, żeby SMS był tańszy (160 znaków na 1 SMS).
+          . SMS z polskimi znakami mieści 70 znaków na część (bez nich 160).
         </p>
         {(Object.keys(SMS_KINDS) as SmsKind[]).map((k) => {
           const list = templates.filter((t) => t.kind === k);

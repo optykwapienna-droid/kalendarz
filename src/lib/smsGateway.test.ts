@@ -36,7 +36,7 @@ describe("wysyłka SMS", () => {
       `Basic ${Buffer.from("abc:xyz").toString("base64")}`,
     );
     expect(JSON.parse(String(calls[0].init.body))).toEqual({
-      textMessage: { text: "Zazolc o 10:00" },
+      textMessage: { text: "Zażółć o 10:00" },
       phoneNumbers: ["+48600100200"],
       ttl: 43200,
     });
