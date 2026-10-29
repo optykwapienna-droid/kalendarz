@@ -7,13 +7,13 @@ export const SMS_DEFAULTS: { kind: SmsKind; name: string; body: string; isDefaul
     kind: "confirmation",
     name: "Potwierdzenie",
     isDefault: true,
-    body: "Dzień dobry,\npotwierdzamy {pana} wizytę ✅\n\n📅 {dzien}, godz. {godzina}\n📍 {salon}, {adres}\n\n🔄 Zmiana rezerwacji:\n{link}\n\nDo zobaczenia! 👓",
+    body: "Dzień dobry, potwierdzamy wizytę {data} o {godzina}, {salon}, {adres}.\nZmiana/odwołanie:\n{link}",
   },
   {
     kind: "reminder",
     name: "Przypomnienie",
     isDefault: true,
-    body: "Dzień dobry,\nprzypominamy o jutrzejszej wizycie 👓\n\n📅 {dzien}, godz. {godzina}\n📍 {salon}, {adres}\n\n🔄 Zmiana rezerwacji:\n{link}",
+    body: "Dzień dobry, przypominamy o wizycie jutro o {godzina}, {salon}, {adres}.\nZmiana/odwołanie:\n{link}",
   },
   {
     kind: "reminder",
@@ -49,6 +49,6 @@ export const SMS_DEFAULTS: { kind: SmsKind; name: string; body: string; isDefaul
   {
     kind: "other",
     name: "Nowy termin wizyty",
-    body: "Dzień dobry,\nzgodnie z ustaleniami {pana} wizyta została przeniesiona ✅\n\n📅 {dzien}, godz. {godzina}\n📍 {salon}, {adres}\n\n🔄 Zmiana rezerwacji:\n{link}",
+    body: "Dzień dobry, wizyta została przeniesiona na {data} o {godzina}, {salon}, {adres}.\nZmiana/odwołanie:\n{link}",
   },
 ];

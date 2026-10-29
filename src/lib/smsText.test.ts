@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderSms, smsParts, toGsm } from "./smsText";
+import { SMS_DEFAULTS } from "./smsDefaults";
 
 const ctx = {
   firstName: "Łucja",
@@ -45,5 +46,15 @@ describe("SMS", () => {
 
   it("{zmiana} prowadzi prosto do wyboru nowego terminu", () => {
     expect(renderSms("{zmiana}", ctx)).toBe(`${ctx.link}/zmien`);
+  });
+});
+
+describe("wzory SMS z linkiem", () => {
+  it("mieszczą się w 1 SMS bez emotikonów", () => {
+    const long = { ...ctx, start: new Date("2026-10-28T09:00:00Z"), link: "https://wizyta.ireneuszgalant.pl/o/cyQ4_ELFpSJ-3R5D" };
+    for (const t of SMS_DEFAULTS.filter((d) => d.body.includes("{link}"))) {
+      const text = renderSms(t.body, long);
+      expect(smsParts(text)).toBe(1);
+    }
   });
 });

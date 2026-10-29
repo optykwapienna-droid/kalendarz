@@ -82,7 +82,7 @@ export default async function SmsTemplates() {
         <section className="card">
           <h2>Nowe wzory SMS-ów</h2>
           <p className="small">
-            Eleganckie wersje z emotikonami, zwrotem Pan/Pani i nazwą {business.name}. Zastąpią treść szablonów o tych
+            Krótkie potwierdzenia i przypomnienia bez emotikonów (mieszczą się w 1 SMS) oraz wersje z nazwą {business.name}. Zastąpią treść szablonów o tych
             samych nazwach, a jako podziękowanie po wizycie będzie wysyłana prośba o opinię w Google.
           </p>
           <div className="summary small" style={{ whiteSpace: "pre-line" }}>
