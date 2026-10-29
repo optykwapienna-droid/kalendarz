@@ -1,6 +1,6 @@
 {
-  "name": "Panel gabinetu – Optyk Galant",
-  "short_name": "Panel gabinetu",
+  "name": "Wizyty – Optyk Galant",
+  "short_name": "Wizyty",
   "start_url": "/panel",
   "scope": "/panel",
   "display": "standalone",
