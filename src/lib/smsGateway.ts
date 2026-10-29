@@ -1,7 +1,6 @@
 // Wysyłka SMS. Domyślnie z telefonu gabinetu przez aplikację SMS Gate na Androidzie
 // (https://sms-gate.app): serwer zleca wysyłkę, a SMS wychodzi z numeru i abonamentu
 // telefonu. Alternatywnie bramka SMSAPI.pl. Bez konfiguracji SMS-y są tylko logowane.
-import { toGsm } from "./smsText";
 
 export type SmsProvider = "smsgate" | "smsapi" | "none";
 
@@ -42,8 +41,7 @@ async function viaSmsApi(phone: string, text: string): Promise<void> {
 }
 
 /** `phone` w formacie 48XXXXXXXXX (jak zapisany w bazie). */
-export async function sendSms(phone: string, message: string): Promise<void> {
-  const text = toGsm(message);
+export async function sendSms(phone: string, text: string): Promise<void> {
   const provider = smsProvider();
   if (provider === "smsgate") return viaSmsGate(phone, text);
   if (provider === "smsapi") return viaSmsApi(phone, text);

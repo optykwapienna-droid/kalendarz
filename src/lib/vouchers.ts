@@ -14,7 +14,7 @@ export const VOUCHERS = [
 export type VoucherId = (typeof VOUCHERS)[number]["id"];
 
 export const VOUCHER_SMS =
-  "Dzień dobry,\ndziękujemy za zakup okularów w {salon}! 🎁\n\nMamy dla {pana} {voucher}:\n{link}\n\nDo zobaczenia! 👓";
+  "Dzień dobry, dziękujemy za zakup okularów w {salon}! Mamy dla {pana} {voucher}:\n{link}\nDo zobaczenia!";
 
 /** Klient, który zgodził się na SMS-y z ofertami (zgoda zapisana przy wysyłce vouchera). */
 export type ConsentRow = {
@@ -76,7 +76,7 @@ export async function sendLoggedSms(phone: string, text: string): Promise<void> 
 
 /** Zaproszenie do zapisów: link do strony rezerwacji (źródło „zaproszenie” w Statystykach). */
 export const INVITE_SMS =
-  "Dzień dobry,\nzapraszamy na badanie wzroku w {salon} 👓\n\nWybierz dogodny termin online:\n📅 {link}\n\nDo zobaczenia!";
+  "Dzień dobry, zapraszamy na badanie wzroku w {salon}. Termin można wybrać online:\n{link}\nDo zobaczenia!";
 
 export function inviteText(firstName: string): string {
   return renderSms(INVITE_SMS, {

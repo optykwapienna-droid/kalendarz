@@ -28,7 +28,7 @@ export const PLACEHOLDERS: Record<string, string> = {
   "{opinia}": "link do wystawienia opinii w Google",
 };
 
-/** SMS bez polskich znaków mieści 160 zamiast 70 znaków, więc jest tańszy. */
+/** Tekst bez polskich znaków (SMS bez nich mieści 160 zamiast 70 znaków). */
 export function toGsm(s: string): string {
   return s
     .replace(/ł/g, "l")
@@ -39,21 +39,21 @@ export function toGsm(s: string): string {
     .replace(/[–—]/g, "-");
 }
 
-// Znaki alfabetu GSM (7-bitowego). Każdy inny znak, np. emotikon, przełącza SMS na Unicode.
+// Znaki alfabetu GSM (7-bitowego). Każdy inny znak, np. polska litera albo emotikon, przełącza SMS na Unicode.
 const GSM = /^[@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&'()*+,\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà^{}\\[~\]|€]*$/;
 
-/** Czy tekst po usunięciu ogonków nadal wymaga Unicode (np. przez emotikony). */
+/** Czy SMS pójdzie jako Unicode (np. przez polskie litery albo emotikony). */
 export function isUnicode(text: string): boolean {
-  return !GSM.test(toGsm(text));
+  return !GSM.test(text);
 }
 
 /**
  * Liczba części SMS. Zwykły SMS mieści 160 znaków (153 w dłuższej wiadomości),
- * SMS z emotikonami 70 (67), a emotikon liczy się jak 2 znaki.
+ * SMS z polskimi literami lub emotikonami 70 (67), a emotikon liczy się jak 2 znaki.
  */
 export function smsParts(text: string): number {
   if (isUnicode(text)) return text.length <= 70 ? 1 : Math.ceil(text.length / 67);
-  const n = toGsm(text).length;
+  const n = text.length;
   return n <= 160 ? 1 : Math.ceil(n / 153);
 }
 
@@ -82,9 +82,8 @@ export function renderSms(body: string, c: SmsContext): string {
     ...honorifics(c.gender ?? null),
   };
   // Zachowujemy podział na linie z szablonu, porządkujemy tylko spacje i puste linie
-  // SMS z emotikonami i tak idzie jako Unicode, więc zostawiamy w nim polskie znaki
-  const filled = body.replace(/\{[a-z]+\}/g, (m) => values[m] ?? m);
-  return (isUnicode(filled) ? filled : toGsm(filled))
+  return body
+    .replace(/\{[a-z]+\}/g, (m) => values[m] ?? m)
     .replace(/\r/g, "")
     .split("\n")
     .map((l) => l.replace(/[ \t]+/g, " ").trim())

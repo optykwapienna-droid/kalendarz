@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { renderSms, smsParts, toGsm } from "./smsText";
+import { SMS_DEFAULTS } from "./smsDefaults";
+import { INVITE_SMS, VOUCHER_SMS } from "./vouchers";
 
 const ctx = {
   firstName: "Łucja",
@@ -15,7 +17,7 @@ describe("SMS", () => {
 
   it("wstawia pola do szablonu", () => {
     expect(renderSms("{imie} {nazwisko}: {data} o {godzina}, {adres}. {link} {nieznane}", ctx)).toBe(
-      "Lucja Zolc: 03.11 o 10:00, ul. Wapienna 20. https://rezerwacje.optykwapienna.pl/o/AbCdEfGhIjKlMnOp {nieznane}",
+      "Łucja Żółć: 03.11 o 10:00, ul. Wapienna 20. https://rezerwacje.optykwapienna.pl/o/AbCdEfGhIjKlMnOp {nieznane}",
     );
   });
 
@@ -35,15 +37,27 @@ describe("SMS", () => {
     for (const t of templates) expect(smsParts(renderSms(t, ctx))).toBe(1);
   });
 
-  it("SMS z emotikonami zachowuje polskie znaki i liczy części jak Unicode", () => {
+  it("zachowuje polskie znaki i liczy części jak Unicode", () => {
     const t = renderSms("✅ {imie}, {dzien}", ctx);
     expect(t).toBe("✅ Łucja, wtorek, 3 listopada");
     expect(smsParts("✅" + "a".repeat(69))).toBe(1);
     expect(smsParts("📅" + "a".repeat(69))).toBe(2);
-    expect(smsParts("ą".repeat(160))).toBe(1);
+    expect(smsParts("ą".repeat(70))).toBe(1);
+    expect(smsParts("ą".repeat(71))).toBe(2);
   });
 
   it("{zmiana} prowadzi prosto do wyboru nowego terminu", () => {
     expect(renderSms("{zmiana}", ctx)).toBe(`${ctx.link}/zmien`);
+  });
+});
+
+describe("wzory SMS", () => {
+  it("są krótkie i bez emotikonów", () => {
+    const long = { ...ctx, start: new Date("2026-10-28T09:00:00Z"), link: "https://wizyta.ireneuszgalant.pl/o/cyQ4_ELFpSJ-3R5D" };
+    for (const body of [...SMS_DEFAULTS.map((d) => d.body), VOUCHER_SMS, INVITE_SMS]) {
+      const text = renderSms(body, long);
+      expect(text).not.toMatch(/\p{Extended_Pictographic}/u);
+      expect(smsParts(text)).toBeLessThanOrEqual(3);
+    }
   });
 });
