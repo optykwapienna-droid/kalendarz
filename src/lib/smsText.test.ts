@@ -52,11 +52,12 @@ describe("SMS", () => {
 });
 
 describe("wzory SMS", () => {
-  it("są krótkie i bez emotikonów", () => {
+  it("są krótkie, bez pustych linii i bez 📅 (telefony pokazują go jako kartkę z datą)", () => {
     const long = { ...ctx, start: new Date("2026-10-28T09:00:00Z"), link: "https://wizyta.ireneuszgalant.pl/o/cyQ4_ELFpSJ-3R5D" };
     for (const body of [...SMS_DEFAULTS.map((d) => d.body), VOUCHER_SMS, INVITE_SMS]) {
       const text = renderSms(body, long);
-      expect(text).not.toMatch(/\p{Extended_Pictographic}/u);
+      expect(text).not.toContain("📅");
+      expect(text).not.toContain("\n\n");
       expect(smsParts(text)).toBeLessThanOrEqual(3);
     }
   });
