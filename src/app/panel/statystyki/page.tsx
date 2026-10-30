@@ -5,7 +5,8 @@ import { isAdmin } from "@/lib/auth";
 import { db, type BookingRow } from "@/lib/db";
 import { listDrafts } from "@/lib/drafts";
 import { monthlyStats } from "@/lib/stats";
-import { localDay } from "@/lib/time";
+import { addDays, localDay } from "@/lib/time";
+import { type VisitDay, visitsSince, weeklyVisits } from "@/lib/visits";
 import Nav from "../Nav";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,13 @@ function monthLabel(month: string): string {
   const l = new Intl.DateTimeFormat("pl-PL", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(Date.UTC(y, m - 1, 15)));
   return l.charAt(0).toUpperCase() + l.slice(1);
 }
+
+function weekLabel(monday: string): string {
+  const f = new Intl.DateTimeFormat("pl-PL", { day: "numeric", month: "short", timeZone: "UTC" });
+  return `${f.format(new Date(monday + "T12:00:00Z"))} – ${f.format(new Date(addDays(monday, 6) + "T12:00:00Z"))}`;
+}
+
+const WEEKS = 8;
 
 export default async function StatsPage() {
   if (!(await isAdmin())) redirect("/panel/login");
@@ -33,9 +41,66 @@ export default async function StatsPage() {
   );
   const drafts = await listDrafts().catch(() => null);
 
+  const today = localDay(new Date(), tz);
+  const visitRes = await db()
+    .from("site_visits")
+    .select("day, visits")
+    .gte("day", addDays(today, -7 * WEEKS));
+  const visits = visitRes.error ? null : (visitRes.data as VisitDay[]);
+  const siteBookingDays = (data as Pick<BookingRow, "created_at" | "source">[])
+    .filter((b) => b.source?.toLowerCase() === "strona")
+    .map((b) => localDay(new Date(b.created_at), tz));
+  const weeks = visits && weeklyVisits(visits, siteBookingDays, today, WEEKS);
+
   return (
     <>
       <Nav active="statystyki" />
+      <section className="card">
+        <h2>Odwiedziny strony ireneuszgalant.pl</h2>
+        {!visits || !weeks ? (
+          <p className="muted">Licznik nie jest jeszcze włączony w bazie (uruchom nową część supabase/schema.sql).</p>
+        ) : (
+          <>
+            <p>
+              Dziś: <strong>{visitsSince(visits, today, 1)}</strong> · ostatnie 7 dni:{" "}
+              <strong>{visitsSince(visits, today, 7)}</strong> · ostatnie 30 dni:{" "}
+              <strong>{visitsSince(visits, today, 30)}</strong>
+            </p>
+            <div style={{ overflowX: "auto" }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tydzień</th>
+                    <th>Odwiedziny</th>
+                    <th>Zapisy ze strony</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {weeks.map((w) => (
+                    <tr key={w.week}>
+                      <td style={{ whiteSpace: "nowrap" }}>{weekLabel(w.week)}</td>
+                      <td>
+                        <strong>{w.visits}</strong>
+                      </td>
+                      <td>
+                        {w.bookings}
+                        {w.visits > 0 && w.bookings > 0 && (
+                          <span className="muted small"> ({Math.round((w.bookings / w.visits) * 100)}%)</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+        <p className="muted small">
+          Jedna odwiedzina to jedno otwarcie strony w przeglądarce (odświeżanie nie liczy się drugi raz). Roboty
+          wyszukiwarek pomijamy. Licznik nie używa cookies i nie zapisuje żadnych danych o odwiedzających. „Zapisy ze
+          strony” to rezerwacje zrobione przyciskiem „Umów wizytę” na stronie.
+        </p>
+      </section>
       <section className="card">
         <h2>Rezerwacje</h2>
         <p className="muted small">
