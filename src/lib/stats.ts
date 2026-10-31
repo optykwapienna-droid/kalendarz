@@ -26,11 +26,11 @@ const SOURCE_LABELS: Record<string, string> = {
   strona: "ireneuszgalant.pl",
 };
 
-/** Skąd przyszła rezerwacja: z linku ?zrodlo=… albo „Strona” (wejście bez oznaczenia). */
+/** Skąd przyszła rezerwacja: z linku ?zrodlo=… albo „Bez oznaczenia” (link bez ?zrodlo). */
 export function sourceLabel(b: Pick<BookingRow, "source" | "created_by">): string {
   const s = (b.source ?? "").toLowerCase();
   if (s) return SOURCE_LABELS[s] ?? s;
-  return b.created_by === "panel" ? "Panel" : "Strona";
+  return b.created_by === "panel" ? "Panel" : "Bez oznaczenia";
 }
 
 /** Rezerwacje pogrupowane wg miesiąca, w którym zostały zrobione (od najnowszego). */

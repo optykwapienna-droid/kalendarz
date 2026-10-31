@@ -311,6 +311,10 @@ export default async function Panel({ searchParams }: { searchParams: Promise<{ 
           Profil Google (Linki do rezerwacji): <code>{siteUrl()}/?zrodlo=google</code>
           <br />
           ZnanyLekarz: <code>{siteUrl()}/?zrodlo=znanylekarz</code>
+          <br />
+          Facebook: <code>{siteUrl()}/?zrodlo=facebook</code>
+          <br />
+          Instagram: <code>{siteUrl()}/?zrodlo=instagram</code>
         </p>
       </section>
     </>

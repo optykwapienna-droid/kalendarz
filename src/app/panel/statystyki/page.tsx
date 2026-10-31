@@ -105,7 +105,7 @@ export default async function StatsPage() {
         <h2>Rezerwacje</h2>
         <p className="muted small">
           Liczone według dnia, w którym ktoś się zapisał (nie dnia wizyty). „Online” to zapisy przez stronę, „panel” to
-          wizyty wpisane przez Ciebie. Źródło pochodzi z linku, np. ?zrodlo=google.
+          wizyty wpisane przez Ciebie. Źródło pochodzi z linku, np. ?zrodlo=google; „Bez oznaczenia” to wejścia z linku bez tej końcówki.
         </p>
         {drafts && (
           <p>
