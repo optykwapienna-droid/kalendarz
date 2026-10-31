@@ -23,6 +23,7 @@ const SOURCE_LABELS: Record<string, string> = {
   voucher50: "Voucher -50%",
   zaproszenie: "Link z panelu",
   reklama: "Reklama (QR)",
+  strona: "ireneuszgalant.pl",
 };
 
 /** Skąd przyszła rezerwacja: z linku ?zrodlo=… albo „Strona” (wejście bez oznaczenia). */

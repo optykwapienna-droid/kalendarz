@@ -115,3 +115,17 @@ create table if not exists marketing_consents (
   last_sent_at timestamptz
 );
 alter table marketing_consents enable row level security;
+
+-- Odwiedziny strony ireneuszgalant.pl: tylko liczba wejść w danym dniu (bez cookies i danych osobowych)
+create table if not exists site_visits (
+  day date primary key,
+  visits integer not null default 0
+);
+alter table site_visits enable row level security;
+
+create or replace function count_site_visit(p_day date) returns void
+language sql as $$
+  insert into site_visits (day, visits) values (p_day, 1)
+  on conflict (day) do update set visits = site_visits.visits + 1;
+$$;
+revoke execute on function count_site_visit(date) from public, anon, authenticated;
