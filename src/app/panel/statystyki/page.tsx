@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { business } from "@/config";
@@ -21,8 +22,8 @@ function monthLabel(month: string): string {
 }
 
 function weekLabel(monday: string): string {
-  const f = new Intl.DateTimeFormat("pl-PL", { day: "numeric", month: "short", timeZone: "UTC" });
-  return `${f.format(new Date(monday + "T12:00:00Z"))} – ${f.format(new Date(addDays(monday, 6) + "T12:00:00Z"))}`;
+  const short = (day: string) => `${Number(day.slice(8, 10))}.${day.slice(5, 7)}`;
+  return `${short(monday)}–${short(addDays(monday, 6))}`;
 }
 
 const WEEKS = 8;
@@ -68,47 +69,51 @@ export default async function StatsPage() {
               <strong>{visitsSince(visits, today, 7)}</strong> · ostatnie 30 dni:{" "}
               <strong>{visitsSince(visits, today, 30)}</strong>
             </p>
-            <div style={{ overflowX: "auto" }}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Tydzień</th>
-                    <th>Odwiedziny</th>
-                    <th>Zapisy ze strony</th>
-                    <th>Wszystkie zapisy: skąd</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {weeks.map((w) => (
-                    <tr key={w.week}>
-                      <td style={{ whiteSpace: "nowrap" }}>{weekLabel(w.week)}</td>
-                      <td>
-                        <strong>{w.visits}</strong>
-                      </td>
-                      <td>
-                        {w.bookings}
-                        {w.bookings > 0 && w.bookings <= w.visits && (
-                          <span className="muted small"> ({Math.round((w.bookings / w.visits) * 100)}%)</span>
-                        )}
-                      </td>
-                      <td className="small">
-                        {Object.entries(w.sources)
-                          .sort((a, b) => b[1] - a[1])
-                          .map(([k, v]) => `${k} ${v}`)
-                          .join(", ") || "–"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Tydzień</th>
+                  <th>Odwiedziny</th>
+                  <th>Zapisy ze strony</th>
+                </tr>
+              </thead>
+              <tbody>
+                {weeks.map((w) => {
+                  const sources = Object.entries(w.sources).sort((a, b) => b[1] - a[1]);
+                  const split = sources.length > 0 ? { borderBottom: "none", paddingBottom: 2 } : undefined;
+                  return (
+                    <Fragment key={w.week}>
+                      <tr>
+                        <td style={{ whiteSpace: "nowrap", ...split }}>{weekLabel(w.week)}</td>
+                        <td style={split}>
+                          <strong>{w.visits}</strong>
+                        </td>
+                        <td style={split}>
+                          {w.bookings}
+                          {w.bookings > 0 && w.bookings <= w.visits && (
+                            <span className="muted small"> ({Math.round((w.bookings / w.visits) * 100)}%)</span>
+                          )}
+                        </td>
+                      </tr>
+                      {sources.length > 0 && (
+                        <tr>
+                          <td colSpan={3} className="muted small" style={{ paddingTop: 0 }}>
+                            Wszystkie zapisy: {sources.map(([k, v]) => `${k} ${v}`).join(" · ")}
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
           </>
         )}
         <p className="muted small">
           Jedna odwiedzina to jedno otwarcie strony w przeglądarce (odświeżanie nie liczy się drugi raz). Roboty
           wyszukiwarek pomijamy. Licznik nie używa cookies i nie zapisuje żadnych danych o odwiedzających. „Zapisy ze
-          strony” to rezerwacje zrobione przyciskiem „Umów wizytę” na stronie, a „Skąd” pokazuje wszystkie zapisy z
-          tygodnia według linku (Facebook, Google…).
+          strony” to rezerwacje zrobione przyciskiem „Umów wizytę” na stronie, a linijka „Wszystkie zapisy” pod
+          tygodniem pokazuje, skąd przyszły wszystkie rezerwacje (Facebook, Google…).
         </p>
       </section>
       <section className="card">
