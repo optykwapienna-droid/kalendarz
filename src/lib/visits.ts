@@ -9,7 +9,10 @@ export type WeekVisits = {
   week: string; // poniedziałek, RRRR-MM-DD
   visits: number;
   bookings: number; // rezerwacje z linku ?zrodlo=strona
+  sources: Record<string, number>; // wszystkie rezerwacje z tygodnia wg źródła
 };
+
+export type BookingDay = { day: string; source: string; fromSite: boolean };
 
 /** Strony, z których przyjmujemy zliczenia. */
 export const SITE_ORIGINS = ["https://ireneuszgalant.pl", "https://www.ireneuszgalant.pl"];
@@ -32,13 +35,13 @@ export function visitsSince(rows: VisitDay[], today: string, days: number): numb
   return rows.filter((r) => r.day >= from && r.day <= today).reduce((s, r) => s + r.visits, 0);
 }
 
-/** Ostatnie `weeks` tygodni (od bieżącego): odwiedziny i rezerwacje ze strony. */
-export function weeklyVisits(rows: VisitDay[], bookingDays: string[], today: string, weeks: number): WeekVisits[] {
+/** Ostatnie `weeks` tygodni (od bieżącego): odwiedziny, rezerwacje ze strony i wszystkie rezerwacje wg źródła. */
+export function weeklyVisits(rows: VisitDay[], bookings: BookingDay[], today: string, weeks: number): WeekVisits[] {
   const current = weekStart(today);
   const list: WeekVisits[] = [];
   const byWeek = new Map<string, WeekVisits>();
   for (let i = 0; i < weeks; i++) {
-    const w = { week: addDays(current, -7 * i), visits: 0, bookings: 0 };
+    const w = { week: addDays(current, -7 * i), visits: 0, bookings: 0, sources: {} as Record<string, number> };
     list.push(w);
     byWeek.set(w.week, w);
   }
@@ -46,9 +49,11 @@ export function weeklyVisits(rows: VisitDay[], bookingDays: string[], today: str
     const w = byWeek.get(weekStart(r.day));
     if (w) w.visits += r.visits;
   }
-  for (const d of bookingDays) {
-    const w = byWeek.get(weekStart(d));
-    if (w) w.bookings++;
+  for (const b of bookings) {
+    const w = byWeek.get(weekStart(b.day));
+    if (!w) continue;
+    if (b.fromSite) w.bookings++;
+    w.sources[b.source] = (w.sources[b.source] ?? 0) + 1;
   }
   return list;
 }

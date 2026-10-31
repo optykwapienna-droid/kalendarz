@@ -28,11 +28,16 @@ describe("odwiedziny strony", () => {
     ];
     expect(visitsSince(rows, "2026-10-30", 1)).toBe(5);
     expect(visitsSince(rows, "2026-10-30", 7)).toBe(10);
-    const w = weeklyVisits(rows, ["2026-10-27", "2026-10-20"], "2026-10-30", 3);
+    const bookings = [
+      { day: "2026-10-27", source: "ireneuszgalant.pl", fromSite: true },
+      { day: "2026-10-28", source: "Facebook", fromSite: false },
+      { day: "2026-10-20", source: "ireneuszgalant.pl", fromSite: true },
+    ];
+    const w = weeklyVisits(rows, bookings, "2026-10-30", 3);
     expect(w).toEqual([
-      { week: "2026-10-26", visits: 8, bookings: 1 },
-      { week: "2026-10-19", visits: 2, bookings: 1 },
-      { week: "2026-10-12", visits: 0, bookings: 0 },
+      { week: "2026-10-26", visits: 8, bookings: 1, sources: { "ireneuszgalant.pl": 1, Facebook: 1 } },
+      { week: "2026-10-19", visits: 2, bookings: 1, sources: { "ireneuszgalant.pl": 1 } },
+      { week: "2026-10-12", visits: 0, bookings: 0, sources: {} },
     ]);
   });
 });
