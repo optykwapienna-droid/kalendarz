@@ -4,7 +4,7 @@ import { monthlyStats, sourceLabel } from "./stats";
 describe("statystyki", () => {
   it("nazywa źródła", () => {
     expect(sourceLabel({ source: "google", created_by: "patient" })).toBe("Google");
-    expect(sourceLabel({ source: null, created_by: "patient" })).toBe("Strona");
+    expect(sourceLabel({ source: null, created_by: "patient" })).toBe("Bez oznaczenia");
     expect(sourceLabel({ source: "telefon", created_by: "panel" })).toBe("Telefon");
   });
 
@@ -17,6 +17,6 @@ describe("statystyki", () => {
     const s = monthlyStats([...rows], (iso) => iso.slice(0, 7));
     expect(s.map((m) => m.month)).toEqual(["2026-10", "2026-09"]);
     expect(s[0]).toMatchObject({ total: 2, online: 1, panel: 1, cancelled: 1, sources: { Google: 1, Telefon: 1 } });
-    expect(s[1]).toMatchObject({ total: 1, noShow: 1, sources: { Strona: 1 } });
+    expect(s[1]).toMatchObject({ total: 1, noShow: 1, sources: { "Bez oznaczenia": 1 } });
   });
 });
