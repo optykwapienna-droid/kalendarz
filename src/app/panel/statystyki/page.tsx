@@ -4,7 +4,7 @@ import { business } from "@/config";
 import { isAdmin } from "@/lib/auth";
 import { db, type BookingRow } from "@/lib/db";
 import { listDrafts } from "@/lib/drafts";
-import { monthlyStats } from "@/lib/stats";
+import { monthlyStats, sourceLabel } from "@/lib/stats";
 import { addDays, localDay } from "@/lib/time";
 import { type VisitDay, visitsSince, weeklyVisits } from "@/lib/visits";
 import Nav from "../Nav";
@@ -47,10 +47,12 @@ export default async function StatsPage() {
     .select("day, visits")
     .gte("day", addDays(today, -7 * WEEKS));
   const visits = visitRes.error ? null : (visitRes.data as VisitDay[]);
-  const siteBookingDays = (data as Pick<BookingRow, "created_at" | "source">[])
-    .filter((b) => b.source?.toLowerCase() === "strona")
-    .map((b) => localDay(new Date(b.created_at), tz));
-  const weeks = visits && weeklyVisits(visits, siteBookingDays, today, WEEKS);
+  const bookingDays = (data as Pick<BookingRow, "created_at" | "created_by" | "source">[]).map((b) => ({
+    day: localDay(new Date(b.created_at), tz),
+    source: sourceLabel(b),
+    fromSite: b.source?.toLowerCase() === "strona",
+  }));
+  const weeks = visits && weeklyVisits(visits, bookingDays, today, WEEKS);
 
   return (
     <>
@@ -73,6 +75,7 @@ export default async function StatsPage() {
                     <th>Tydzień</th>
                     <th>Odwiedziny</th>
                     <th>Zapisy ze strony</th>
+                    <th>Wszystkie zapisy: skąd</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -84,9 +87,15 @@ export default async function StatsPage() {
                       </td>
                       <td>
                         {w.bookings}
-                        {w.visits > 0 && w.bookings > 0 && (
+                        {w.bookings > 0 && w.bookings <= w.visits && (
                           <span className="muted small"> ({Math.round((w.bookings / w.visits) * 100)}%)</span>
                         )}
+                      </td>
+                      <td className="small">
+                        {Object.entries(w.sources)
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([k, v]) => `${k} ${v}`)
+                          .join(", ") || "–"}
                       </td>
                     </tr>
                   ))}
@@ -98,7 +107,8 @@ export default async function StatsPage() {
         <p className="muted small">
           Jedna odwiedzina to jedno otwarcie strony w przeglądarce (odświeżanie nie liczy się drugi raz). Roboty
           wyszukiwarek pomijamy. Licznik nie używa cookies i nie zapisuje żadnych danych o odwiedzających. „Zapisy ze
-          strony” to rezerwacje zrobione przyciskiem „Umów wizytę” na stronie.
+          strony” to rezerwacje zrobione przyciskiem „Umów wizytę” na stronie, a „Skąd” pokazuje wszystkie zapisy z
+          tygodnia według linku (Facebook, Instagram, Google…).
         </p>
       </section>
       <section className="card">
