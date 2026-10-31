@@ -14,7 +14,7 @@ import DayTimeFields from "./DayTimeFields";
 import Nav from "./Nav";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Panel gabinetu", robots: { index: false } };
+export const metadata: Metadata = { title: "Wizyty", robots: { index: false } };
 
 const tz = business.timezone;
 
