@@ -108,7 +108,7 @@ export default async function StatsPage() {
           Jedna odwiedzina to jedno otwarcie strony w przeglądarce (odświeżanie nie liczy się drugi raz). Roboty
           wyszukiwarek pomijamy. Licznik nie używa cookies i nie zapisuje żadnych danych o odwiedzających. „Zapisy ze
           strony” to rezerwacje zrobione przyciskiem „Umów wizytę” na stronie, a „Skąd” pokazuje wszystkie zapisy z
-          tygodnia według linku (Facebook, Instagram, Google…).
+          tygodnia według linku (Facebook, Google…).
         </p>
       </section>
       <section className="card">

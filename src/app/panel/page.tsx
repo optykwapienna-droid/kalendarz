@@ -313,8 +313,6 @@ export default async function Panel({ searchParams }: { searchParams: Promise<{ 
           ZnanyLekarz: <code>{siteUrl()}/?zrodlo=znanylekarz</code>
           <br />
           Facebook: <code>{siteUrl()}/?zrodlo=facebook</code>
-          <br />
-          Instagram: <code>{siteUrl()}/?zrodlo=instagram</code>
         </p>
       </section>
     </>
