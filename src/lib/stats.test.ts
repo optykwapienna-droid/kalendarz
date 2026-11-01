@@ -6,6 +6,7 @@ describe("statystyki", () => {
     expect(sourceLabel({ source: "google", created_by: "patient" })).toBe("Google");
     expect(sourceLabel({ source: null, created_by: "patient" })).toBe("Bez oznaczenia");
     expect(sourceLabel({ source: "telefon", created_by: "panel" })).toBe("Telefon");
+    expect(sourceLabel({ source: "ads", created_by: "patient" })).toBe("Google Ads");
   });
 
   it("liczy rezerwacje w miesiącach", () => {
